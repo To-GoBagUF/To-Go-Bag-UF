@@ -499,7 +499,7 @@
       name, email, phone, address, postal, city, shipping, variant, quantity, total
     }).then(function(){
       // Open Swish
-      window.location.href = `https://swish.nu/?number=0764134947&amount=${total}&text=To-Go%20Bag%20(${variant},%20förbeställning)`;
+      window.location.href = `swish://paymentrequest?token=1&payee=0764134947&amount=${total}&message=To-Go%20Bag%20(${variant},%20förbeställning)`;
     }, function(error){
       alert("Det gick inte att skicka adressen. Försök igen.");
       console.log(error);
