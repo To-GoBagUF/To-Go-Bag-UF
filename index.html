@@ -1,29 +1,121 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>To-Go Bag UF</title>
 <style>
-  body { margin:0; font-family: Arial, sans-serif; background:white; color:#001f3f; }
-  header { background:#001f3f; color:white; padding:60px 20px; text-align:center; }
-  header h1 { margin:0; font-size:48px; }
-  header p { font-size:20px; margin-top:10px; }
-  .btn { display:inline-block; padding:14px 28px; margin:10px; border:none; border-radius:12px; font-size:18px; cursor:pointer; transition:0.3s; }
-  .btn:hover { transform: scale(1.05); }
-  .btn-primary { background:#001f3f; color:white; }
-  .btn-secondary { background:white; color:#001f3f; border:2px solid #001f3f; }
-  section { padding:60px 20px; text-align:center; display:none; }
-  .product-description { max-width:600px; margin:0 auto; }
-  select, input[type="number"], input[type="text"], input[type="email"] { width:100%; padding:10px; margin-bottom:12px; border-radius:6px; border:1px solid #001f3f; }
-  #cartIcon { position:fixed; top:20px; right:20px; font-size:28px; background:#001f3f; color:white; padding:14px 18px; border-radius:50%; cursor:pointer; z-index:100; }
-  #cartModal, #checkoutModal { display:flex; justify-content:center; align-items:center; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1000; opacity:0; pointer-events:none; transition:0.4s; }
-  .modalContent { background:white; padding:30px; border-radius:12px; max-width:500px; width:90%; position:relative; transform:translateY(-50px); transition:0.4s; text-align:left; }
-  .modalOpen { opacity:1; pointer-events:auto; }
-  .modalOpen .modalContent { transform:translateY(0); }
-  .closeBtn { position:absolute; top:10px; right:15px; font-size:24px; cursor:pointer; }
-  footer { background:#001f3f; color:white; padding:20px; text-align:center; }
-  .preorder-banner { background:#001f3f; color:white; padding:12px; text-align:center; font-weight:bold; font-size:18px; }
+  :root{
+    --navy: #001f3f;
+    --white: #ffffff;
+    --black: #000000;
+    --radius: 12px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:Inter,system-ui,Arial,sans-serif;
+    color:var(--navy);
+    background:var(--white);
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* HEADER / HERO */
+  header{
+    background:var(--navy);
+    color:var(--white);
+    padding:64px 20px;
+    text-align:center;
+  }
+  header h1{font-size:48px; margin:0; letter-spacing:0.5px}
+  header p{margin:12px 0 24px; font-size:18px; opacity:0.95}
+  .header-buttons{display:flex; gap:12px; justify-content:center; flex-wrap:wrap}
+  .btn{
+    padding:12px 24px;
+    border-radius:10px;
+    font-size:16px;
+    border:0;
+    cursor:pointer;
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .btn:active{transform:scale(.99)}
+  .btn-primary{background:var(--white); color:var(--navy); font-weight:600; box-shadow:0 6px 18px rgba(0,0,0,0.12)}
+  .btn-secondary{background:transparent; color:var(--white); border:2px solid rgba(255,255,255,0.12)}
+  .btn-primary:hover, .btn-secondary:hover{transform:translateY(-3px)}
+
+  /* PREORDER BANNER */
+  .preorder{
+    background:var(--navy);
+    color:var(--white);
+    padding:10px 16px;
+    text-align:center;
+    font-weight:600;
+    font-size:18px;
+  }
+
+  /* PAGE SECTIONS */
+  main{max-width:1100px; margin:36px auto; padding:0 20px;}
+  section{padding:48px 0; display:none;} /* sections hidden until shown */
+  .section-inner{max-width:900px; margin:0 auto; text-align:left}
+  h2{color:var(--navy); margin:0 0 12px; font-size:28px}
+  p.lead{font-size:16px; margin:0 0 18px; color:#0a2340}
+
+  /* PRODUCT CARD */
+  .product-card{
+    display:grid;
+    grid-template-columns: 1fr 380px;
+    gap:28px;
+    align-items:start;
+  }
+  .prod-info{}
+  .prod-visual{
+    background:#f8fbff;
+    border-radius:14px;
+    padding:20px;
+    text-align:center;
+  }
+  .price{font-size:20px; font-weight:700; color:var(--navy); margin-top:8px}
+
+  label{display:block; margin-bottom:6px; font-weight:600; color:#00314f}
+  select, input[type="number"], input[type="text"], input[type="email"]{
+    width:100%; padding:10px 12px; border-radius:8px; border:1px solid #cfe0ef; font-size:15px; color:#00314f;
+    outline:none;
+  }
+  select:focus, input:focus{box-shadow:0 6px 18px rgba(0,31,63,0.06); border-color: #9cc0e6}
+
+  /* FOOTER */
+  footer{background:var(--navy); color:var(--white); padding:28px 20px; margin-top:36px; text-align:center; font-size:14px}
+
+  /* CART ICON */
+  #cartIcon{
+    position:fixed; right:20px; bottom:20px;
+    background:var(--navy); color:white; padding:12px 14px; border-radius:999px; font-size:18px; z-index:1200;
+    box-shadow:0 8px 26px rgba(0,0,0,0.18); cursor:pointer;
+  }
+
+  /* MODALS */
+  .modal-backdrop{
+    position:fixed; inset:0; background:rgba(0,0,0,0.6); display:flex; justify-content:center; align-items:center;
+    z-index:1300; opacity:0; pointer-events:none; transition:opacity .28s ease;
+  }
+  .modal-backdrop.open{opacity:1; pointer-events:auto}
+  .modal{
+    width:100%; max-width:520px; background:white; border-radius:var(--radius); padding:22px; transform:translateY(-30px);
+    box-shadow:0 12px 40px rgba(0,0,0,0.18); transition:transform .28s ease;
+  }
+  .modal-backdrop.open .modal{ transform:translateY(0) }
+  .modal .close{ position:absolute; right:18px; top:14px; font-size:20px; cursor:pointer; color:#666 }
+
+  .cart-item{display:flex; gap:12px; align-items:center; margin-bottom:12px}
+  .muted{color:#6b879a; font-size:14px}
+  .fullwidth{width:100%}
+  .summary{background:#f4f9ff; padding:12px; border-radius:10px; margin-top:12px}
+
+  /* responsive */
+  @media (max-width:900px){
+    .product-card{grid-template-columns: 1fr; }
+    header h1{font-size:34px}
+  }
 </style>
 </head>
 <body>
@@ -31,108 +123,415 @@
 <header>
   <h1>To-Go Bag</h1>
   <p>För alla små kriser i livet – vi packade väskan åt dig 😉</p>
-  <button class="btn btn-primary" onclick="showSection('product')">Produkt</button>
-  <button class="btn btn-secondary" onclick="showSection('contact')">Kontakt</button>
+  <div class="header-buttons">
+    <button class="btn btn-primary" onclick="showSection('product')">Produkt</button>
+    <button class="btn btn-secondary" onclick="showSection('contact')">Kontakt</button>
+  </div>
 </header>
 
-<div class="preorder-banner">OBS! Just nu förbeställning – produkten skickas när lager finns.</div>
+<div class="preorder">Just nu förbeställning</div>
 
-<section id="product">
-  <h2>The To-Go Bag</h2>
-  <div class="product-description">
-    <p>En liten väska med handsanitizer, bandages, hairties, tampon/pad, müslibar, gum och wetwipes.</p>
-    <label>Variant:</label>
-    <select id="variantSelect">
-      <option value="Pad/Tampon">Pad/Tampon</option>
-      <option value="Male">Male</option>
-    </select>
-    <div id="subVariantContainer">
-      <label>Välj produkt:</label>
-      <select id="subVariantSelect">
-        <option value="Pad">Pad</option>
-        <option value="Tampon">Tampon</option>
-      </select>
+<main>
+  <!-- HOME - short intro (visible by clicking 'Produkt' if you like) -->
+  <section id="home">
+    <div class="section-inner">
+      <h2>Välkommen</h2>
+      <p class="lead">To-Go Bag är en smart liten nödväska med det viktigaste för små vardagskriser. Scrolla ner eller klicka på <strong>Produkt</strong> för att se vår To-Go Bag och beställa.</p>
     </div>
-    <label>Färg:</label>
-    <select id="colorSelect">
-      <option value="Blå">Blå</option>
-      <option value="Rosa">Rosa</option>
-      <option value="Svart">Svart</option>
-      <option value="Vit">Vit</option>
-    </select>
-    <button id="orderBtn" class="btn btn-primary">Lägg i varukorg - 85kr</button>
+  </section>
+
+  <!-- PRODUCT -->
+  <section id="product">
+    <div class="section-inner">
+      <h2>The To-Go Bag</h2>
+      <p class="lead">En liten väska med handsanitizer, plåster, hårsnoddar, binda/tampong, müslibar, tuggummi och våtservetter.</p>
+
+      <div class="product-card">
+        <div class="prod-info">
+          <p style="font-weight:700; margin:0 0 8px">The To-Go Bag</p>
+          <p class="muted">Perfekt för skolan, jobbet eller resan — vi packade väskan åt dig.</p>
+          <div style="margin-top:18px;">
+            <label for="variantSelect">Variant</label>
+            <select id="variantSelect">
+              <option value="Binda/Tampong">Binda/Tampong</option>
+              <option value="Male">Male</option>
+            </select>
+
+            <div id="subVariantWrap" style="margin-top:10px;">
+              <label for="subVariantSelect">Välj</label>
+              <select id="subVariantSelect">
+                <option value="Binda">Binda</option>
+                <option value="Tampong">Tampong</option>
+              </select>
+            </div>
+
+            <div style="margin-top:10px;">
+              <label for="colorSelect">Färg</label>
+              <select id="colorSelect">
+                <option value="Blå">Blå</option>
+                <option value="Rosa">Rosa</option>
+                <option value="Svart">Svart</option>
+                <option value="Vit">Vit</option>
+              </select>
+            </div>
+
+            <div style="margin-top:14px; display:flex; gap:12px; align-items:center;">
+              <button id="orderBtn" class="btn btn-primary">Lägg i varukorg — 85 kr</button>
+              <div class="muted">Pris/st: <strong>85 kr</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="prod-visual">
+          <!-- placeholder image / product visual -->
+          <div style="width:100%; height:220px; display:flex; align-items:center; justify-content:center; color:#235; font-weight:700;">
+            Produktbild
+          </div>
+          <div class="price">85 kr</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT / MORE (same length feel as first version) -->
+  <section id="about">
+    <div class="section-inner">
+      <h2>Om oss</h2>
+      <p class="lead">Vi är ett UF-företag som vill göra det enklare att hantera små oväntade situationer. To-Go Bag är framtagen för att vara diskret, kompakt och användbar.</p>
+      <p class="muted">Slogan: För alla små kriser i livet – vi packade väskan åt dig 😉</p>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="section-inner">
+      <h2>Kontakt</h2>
+      <p>Har du frågor? Mejla oss på <a href="mailto:togobaguf@gmail.com">togobaguf@gmail.com</a>.</p>
+    </div>
+  </section>
+</main>
+
+<!-- floating cart icon -->
+<div id="cartIcon" title="Varukorg" onclick="openCart()">
+  🛒 <span id="cartCount">0</span>
+</div>
+
+<!-- CART MODAL -->
+<div id="cartModalBackdrop" class="modal-backdrop" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div style="position:relative">
+      <span class="close" onclick="closeCart()">✕</span>
+      <h3 style="margin-top:4px">Din varukorg</h3>
+    </div>
+
+    <div id="cartContentArea" style="margin-top:12px">
+      <!-- dynamic cart content -->
+    </div>
+
+    <div style="margin-top:12px; display:flex; gap:10px;">
+      <button class="btn btn-secondary fullwidth" onclick="closeCart()">Fortsätt handla</button>
+      <button class="btn btn-primary fullwidth" id="checkoutBtn" onclick="proceedToCheckout()">Förbeställ / Checkout</button>
+    </div>
   </div>
-</section>
+</div>
 
-<section id="contact">
-  <h2>Kontakt</h2>
-  <p>E-post: <a href="mailto:togobaguf@gmail.com">togobaguf@gmail.com</a></p>
-</section>
+<!-- CHECKOUT MODAL -->
+<div id="checkoutModalBackdrop" class="modal-backdrop" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div style="position:relative">
+      <span class="close" onclick="closeCheckout()">✕</span>
+      <h3 style="margin-top:4px">Slutför beställning</h3>
+    </div>
 
-<div id="cartIcon">🛒 <span id="cartCount">0</span></div>
-<div id="cartModal"><div class="modalContent"><span id="closeCart" class="closeBtn">&times;</span><h2>Din varukorg</h2><div id="cartContent"></div></div></div>
-<div id="checkoutModal"><div class="modalContent"><span id="closeCheckout" class="closeBtn">&times;</span><h2>Slutför beställning</h2><form id="checkout-form"><input type="text" id="name" placeholder="Namn" required><input type="email" id="email" placeholder="E-post" required><input type="text" id="phone" placeholder="Telefonnummer" required><input type="text" id="address" placeholder="Adress" required><input type="text" id="postal" placeholder="Postnummer" required><input type="text" id="city" placeholder="Stad" required><label for="shipping">Fraktmetod:</label><select id="shipping"><option value="Standard">Standard</option><option value="Express">Express</option></select><label for="variant">Variant:</label><select id="variant"><option value="Pad/Tampon">Pad/Tampon</option><option value="Male">Male</option></select><label for="subVariant">Produktval:</label><select id="subVariant"><option value="Pad">Pad</option><option value="Tampon">Tampon</option></select><label for="color">Färg:</label><select id="color"><option value="Blå">Blå</option><option value="Rosa">Rosa</option><option value="Svart">Svart</option><option value="Vit">Vit</option></select><label for="quantityCheckout">Antal:</label><input type="number" id="quantityCheckout" value="1" min="1"><button type="button" onclick="sendShippingAndPay()" class="btn btn-primary" style="width:100%;">Slutför köp</button></form></div></div>
+    <form id="checkoutForm" style="margin-top:12px" onsubmit="return false;">
+      <label for="name">Namn</label>
+      <input id="name" type="text" required>
 
-<footer>&copy; 2025 To-Go Bag UF</footer>
+      <label for="email">E-post</label>
+      <input id="email" type="email" required>
 
+      <label for="phone">Telefonnummer</label>
+      <input id="phone" type="text" placeholder="Valfritt men rekommenderas">
+
+      <label for="address">Adress</label>
+      <input id="address" type="text" required>
+
+      <label for="postal">Postnummer</label>
+      <input id="postal" type="text" required>
+
+      <label for="city">Stad</label>
+      <input id="city" type="text" required>
+
+      <label for="shipping">Fraktmetod</label>
+      <select id="shipping">
+        <option value="Standard">Standard</option>
+        <option value="Express">Express</option>
+      </select>
+
+      <!-- order summary small -->
+      <div class="summary">
+        <div><strong>Produkt:</strong> <span id="summaryProduct">-</span></div>
+        <div><strong>Antal:</strong> <span id="summaryQuantity">1</span></div>
+        <div style="margin-top:8px"><strong>Totalt:</strong> <span id="summaryTotal">85</span> kr</div>
+      </div>
+
+      <div style="margin-top:12px">
+        <button type="button" class="btn btn-primary fullwidth" onclick="submitOrder()">Slutför köp</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<footer>
+  <div>© 2025 To-Go Bag UF</div>
+  <div style="margin-top:6px">Kontakt: <a style="color: #e6f2ff" href="mailto:togobaguf@gmail.com">togobaguf@gmail.com</a></div>
+</footer>
+
+<!-- EmailJS -->
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script>
+/* ---------- CONFIG ---------- */
+/* DINA EMAILJS NYCKLAR (du gav dem tidigare) */
 emailjs.init("ZUlGUNzP7Tqxg-LkD");
+const EMAIL_SERVICE = "service_obk5jf2";
+const EMAIL_TEMPLATE = "template_kj9rgm7";
 
+/* Swish number */
+const SWISH_NUMBER = "0764134947";
+
+/* Produktpris */
+const PRICE = 85;
+
+/* ---------- UI: initial state ---------- */
+document.addEventListener('DOMContentLoaded', ()=> {
+  // Start page: show hero (home-like) but we want user to click Produkt to view product:
+  // show the top hero but not sections; optionally show home as small intro
+  // We'll leave sections hidden until user clicks the header buttons.
+  // (If you want product visible by default, call showSection('product'))
+  // showSection('home'); // keep home hidden until click, but it's ok to show a bit:
+  // For better UX, show a tiny intro (home). We'll show home by default.
+  showSection('home');
+  // Hook: if variant isn't Binda/Tampong, hide sub-variant
+  handleVariantVisibility();
+
+  // Ensure subVariantWrap visibility initially:
+  document.getElementById('variantSelect').addEventListener('change', handleVariantVisibility);
+});
+
+/* ---------- Navigation / Sections ---------- */
 function showSection(id){
-  const sections = document.querySelectorAll('section');
-  sections.forEach(sec => { sec.style.display='none'; });
+  const sections = document.querySelectorAll('main section');
+  sections.forEach(s => s.style.display = 'none');
   const target = document.getElementById(id);
-  target.style.display='block';
-  target.scrollIntoView({behavior:'smooth'});
+  if(!target) return;
+  target.style.display = 'block';
+  target.scrollIntoView({behavior:'smooth', block:'start'});
 }
 
-let cart = 0;
-document.getElementById('variantSelect').addEventListener('change', function(){ document.getElementById('subVariantContainer').style.display = (this.value==='Pad/Tampon')?'block':'none'; });
-function openModal(id){ document.getElementById(id).classList.add('modalOpen'); }
-function closeModal(id){ document.getElementById(id).classList.remove('modalOpen'); }
-
-document.getElementById('orderBtn').onclick = function(){
-  cart = 1;
-  const selectedVariant = document.getElementById('variantSelect').value;
-  let selectedSubVariant = '';
-  if(selectedVariant==='Pad/Tampon') selectedSubVariant = document.getElementById('subVariantSelect').value;
-  const selectedColor = document.getElementById('colorSelect').value;
-  document.getElementById('cartCount').innerText = cart;
-  document.getElementById('cartContent').innerHTML = `<p>The To-Go Bag - 85kr</p><p>Variant: ${selectedVariant}${selectedSubVariant?' ('+selectedSubVariant+')':''}</p><p>Färg: ${selectedColor}</p><label for="cartQuantity">Antal:</label><input type="number" id="cartQuantity" value="1" min="1"><p>Total: <span id="cartTotal">85</span>kr</p><button id="proceedCheckout">Förbeställ / Checkout</button>`;
-  openModal('cartModal');
-  const cartQuantityInput = document.getElementById('cartQuantity');
-  const cartTotalSpan = document.getElementById('cartTotal');
-  cartQuantityInput.addEventListener('input', function(){ let quantity=parseInt(cartQuantityInput.value); if(isNaN(quantity)||quantity<1) quantity=1; cartQuantityInput.value=quantity; cartTotalSpan.innerText=85*quantity; });
-  document.getElementById('proceedCheckout').onclick = function(){ const quantity=parseInt(cartQuantityInput.value)||1; document.getElementById('variant').value=selectedVariant; document.getElementById('subVariant').value=selectedSubVariant; document.getElementById('color').value=selectedColor; document.getElementById('quantityCheckout').value=quantity; closeModal('cartModal'); openModal('checkoutModal'); }
-};
-
-document.getElementById('cartIcon').onclick = function(){ if(cart>0) openModal('cartModal'); else alert("Din varukorg är tom."); }
-document.getElementById('closeCart').onclick = ()=>closeModal('cartModal');
-document.getElementById('closeCheckout').onclick = ()=>closeModal('checkoutModal');
-
-function sendShippingAndPay(){
-  const name=document.getElementById('name').value;
-  const email=document.getElementById('email').value;
-  const phone=document.getElementById('phone').value;
-  const address=document.getElementById('address').value;
-  const postal=document.getElementById('postal').value;
-  const city=document.getElementById('city').value;
-  const shipping=document.getElementById('shipping').value;
-  const variant=document.getElementById('variant').value;
-  const subVariant=document.getElementById('subVariant').value;
-  const color=document.getElementById('color').value;
-  const quantity=parseInt(document.getElementById('quantityCheckout').value)||1;
-  const total=quantity*85;
-
-  emailjs.send("service_obk5jf2","template_kj9rgm7",{name,email,phone,address,postal,city,shipping,variant,subVariant,color,quantity,total}).then(()=>{
-    const modalContent=document.querySelector('#checkoutModal .modalContent');
-    modalContent.innerHTML=`<span id="closeCheckout" class="closeBtn">&times;</span><h2>Tack för din beställning!</h2><p><strong>Namn:</strong> ${name}</p><p><strong>E-post:</strong> ${email}</p><p><strong>Telefon:</strong> ${phone}</p><p><strong>Adress:</strong> ${address}, ${postal} ${city}</p><p><strong>Fraktmetod:</strong> ${shipping}</p><p><strong>Produkt:</strong> ${variant} ${subVariant} - ${color}</p><p><strong>Antal:</strong> ${quantity}</p><p><strong>Total:</strong> ${total}kr</p><p>Öppna Swish på mobilen för att betala.</p>`;
-    document.getElementById('closeCheckout').onclick = ()=>closeModal('checkoutModal');
-    if(/Mobi|Android/i.test(navigator.userAgent)){ window.location.href=`swish://paymentrequest?token=1&callbackurl=https://togobaguf.com&payee=0764134947&amount=${total}&message=To-Go%20Bag%20(${variant},${subVariant},${color},%20förbeställning)`; }
-    else alert("Swish fungerar endast på mobilen. Öppna sidan på mobilen för att betala.");
-  }, e=>{alert("Det gick inte att skicka adressen."); console.log(e);});
+/* ---------- Variant visibility ---------- */
+function handleVariantVisibility(){
+  const variant = document.getElementById('variantSelect').value;
+  const subWrap = document.getElementById('subVariantWrap');
+  if(variant === 'Binda/Tampong') subWrap.style.display = 'block'; else subWrap.style.display = 'none';
 }
+
+/* ---------- Cart logic ---------- */
+let cart = { quantity: 0, variant: null, subVariant: null, color: null };
+
+function openCart(){
+  if(cart.quantity === 0){
+    alert("Din varukorg är tom.");
+    return;
+  }
+  renderCart();
+  document.getElementById('cartModalBackdrop').classList.add('open');
+}
+function closeCart(){ document.getElementById('cartModalBackdrop').classList.remove('open'); }
+function openCheckout(){ document.getElementById('checkoutModalBackdrop').classList.add('open'); }
+function closeCheckout(){ document.getElementById('checkoutModalBackdrop').classList.remove('open'); }
+
+/* Add to cart button */
+document.getElementById('orderBtn').addEventListener('click', ()=>{
+  const variant = document.getElementById('variantSelect').value;
+  const subVariant = (variant === 'Binda/Tampong') ? document.getElementById('subVariantSelect').value : '';
+  const color = document.getElementById('colorSelect').value;
+  cart = { quantity: 1, variant, subVariant, color };
+  document.getElementById('cartCount').innerText = 1;
+  renderCart();
+  // open cart so user can review
+  document.getElementById('cartModalBackdrop').classList.add('open');
+});
+
+/* Render cart content */
+function renderCart(){
+  const target = document.getElementById('cartContentArea');
+  if(!cart || cart.quantity <= 0){
+    target.innerHTML = "<p>Din varukorg är tom.</p>";
+    return;
+  }
+  const subText = cart.subVariant ? ` (${cart.subVariant})` : '';
+  target.innerHTML = `
+    <div class="cart-item">
+      <div style="flex:1">
+        <div style="font-weight:700">The To-Go Bag</div>
+        <div class="muted">Variant: ${cart.variant}${subText}</div>
+        <div class="muted">Färg: ${cart.color}</div>
+      </div>
+      <div style="text-align:right">
+        <label for="cartQty">Antal</label>
+        <input id="cartQty" type="number" value="${cart.quantity}" min="1" style="width:70px; padding:6px; border-radius:6px; border:1px solid #d9e9fb">
+        <div style="margin-top:8px; font-weight:700">${PRICE * cart.quantity} kr</div>
+      </div>
+    </div>
+    <div style="margin-top:12px" class="muted">Ändra antal i fältet ovan för att uppdatera totalsumma.</div>
+  `;
+
+  // attach listener for quantity change
+  document.getElementById('cartQty').addEventListener('input', (e)=>{
+    let q = parseInt(e.target.value);
+    if(isNaN(q) || q < 1) q = 1;
+    cart.quantity = q;
+    document.getElementById('cartCount').innerText = q;
+    renderCart(); // re-render to update totals
+  });
+}
+
+/* Proceed to checkout from cart */
+function proceedToCheckout(){
+  if(!cart || cart.quantity <= 0){
+    alert("Din varukorg är tom.");
+    return;
+  }
+  // populate checkout summary + fields
+  document.getElementById('summaryProduct').innerText = `${cart.variant}${cart.subVariant ? ' ('+cart.subVariant+')' : ''} — ${cart.color}`;
+  document.getElementById('summaryQuantity').innerText = cart.quantity;
+  document.getElementById('summaryTotal').innerText = PRICE * cart.quantity;
+  // set hidden selects in checkout form
+  document.getElementById('variant').value = cart.variant;
+  document.getElementById('subVariant').value = cart.subVariant || '';
+  document.getElementById('color').value = cart.color;
+  document.getElementById('quantityCheckout').value = cart.quantity;
+  closeCart();
+  // open checkout modal:
+  document.getElementById('checkoutModalBackdrop').classList.add('open');
+}
+
+/* Wire the simple open/close for modals */
+document.getElementById('cartModalBackdrop').addEventListener('click', (e)=>{
+  if(e.target === document.getElementById('cartModalBackdrop')) closeCart();
+});
+document.getElementById('checkoutModalBackdrop').addEventListener('click', (e)=>{
+  if(e.target === document.getElementById('checkoutModalBackdrop')) closeCheckout();
+});
+
+/* ---------- Submit order (EmailJS + Swish) ---------- */
+function submitOrder(){
+  // gather fields
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const address = document.getElementById('address').value.trim();
+  const postal = document.getElementById('postal').value.trim();
+  const city = document.getElementById('city').value.trim();
+  const shipping = document.getElementById('shipping').value;
+  const variant = document.getElementById('variant').value;
+  const subVariant = document.getElementById('subVariant').value;
+  const color = document.getElementById('color').value;
+  const quantity = parseInt(document.getElementById('quantityCheckout').value) || 1;
+  const total = PRICE * quantity;
+
+  if(!name || !email || !address || !postal || !city){
+    alert("Fyll i alla obligatoriska fält (Namn, E-post, Adress, Postnummer, Stad).");
+    return;
+  }
+
+  // Prepare emailjs template params
+  const templateParams = {
+    name, email, phone, address, postal, city, shipping,
+    variant, subVariant, color, quantity, total
+  };
+
+  // disable button to prevent duplicates
+  const btn = document.querySelector('#checkoutForm button');
+  btn.disabled = true;
+  btn.innerText = "Skickar...";
+
+  emailjs.send(EMAIL_SERVICE, EMAIL_TEMPLATE, templateParams).then(() => {
+    // Show confirmation inside checkout modal
+    const modal = document.querySelector('#checkoutModalBackdrop .modal');
+    modal.innerHTML = `
+      <div style="position:relative">
+        <span class="close" onclick="closeCheckout()">✕</span>
+        <h3>Tack! Din beställning mottagen</h3>
+      </div>
+      <div style="margin-top:8px">
+        <p><strong>Namn:</strong> ${escapeHtml(name)}</p>
+        <p><strong>E-post:</strong> ${escapeHtml(email)}</p>
+        ${phone ? `<p><strong>Telefon:</strong> ${escapeHtml(phone)}</p>` : ''}
+        <p><strong>Adress:</strong> ${escapeHtml(address)}, ${escapeHtml(postal)} ${escapeHtml(city)}</p>
+        <p><strong>Fraktmetod:</strong> ${escapeHtml(shipping)}</p>
+        <p><strong>Produkt:</strong> ${escapeHtml(variant)} ${subVariant ? '('+escapeHtml(subVariant)+')' : ''} — ${escapeHtml(color)}</p>
+        <p><strong>Antal:</strong> ${quantity}</p>
+        <p><strong>Total:</strong> ${total} kr</p>
+        <p style="margin-top:12px">Du skickas nu vidare till Swish för att betala (öppnas endast på mobil).</p>
+      </div>
+    `;
+    // open swish on mobile (attempt)
+    tryOpenSwish(total, variant, subVariant, color);
+    // reset cart
+    cart = { quantity:0, variant:null, subVariant:null, color:null };
+    document.getElementById('cartCount').innerText = 0;
+    btn.disabled = false;
+    btn.innerText = "Slutför köp";
+  }, (err) => {
+    console.error(err);
+    alert("Det gick inte att skicka beställningen via e-post. Försök igen.");
+    btn.disabled = false;
+    btn.innerText = "Slutför köp";
+  });
+}
+
+/* Attempt to open Swish app, fallback to swish.nu link after timeout */
+function tryOpenSwish(amount, variant, subVariant, color){
+  const message = encodeURIComponent(`To-Go Bag (${variant}${subVariant ? ', '+subVariant : ''}, ${color}) förbeställning`);
+  const callback = encodeURIComponent(window.location.href);
+  const swishURL = `swish://paymentrequest?token=1&callbackurl=${callback}&payee=${SWISH_NUMBER}&amount=${amount}&message=${message}`;
+  const webFallback = `https://swish.nu/?number=${SWISH_NUMBER}&amount=${amount}&text=${message}`;
+
+  // Create temporary iframe or link trick
+  const now = Date.now();
+  // Try to open via location change (mobile)
+  window.location.href = swishURL;
+
+  // If after 1.2s we are still on page (app didn't open), open web fallback in new tab
+  setTimeout(() => {
+    // Heuristic: if page is still visible and user didn't switch, open fallback page
+    if(Date.now() - now < 4000){ // still here
+      // open fallback in new tab so mobile users without app can pay via web instructions
+      window.open(webFallback, '_blank');
+    }
+  }, 1200);
+}
+
+/* Utility escape */
+function escapeHtml(unsafe){
+  return unsafe
+       .replace(/&/g, "&amp;")
+       .replace(/</g, "&lt;")
+       .replace(/>/g, "&gt;")
+       .replace(/\"/g, "&quot;")
+       .replace(/'/g, "&#039;");
+}
+
+/* ---------- small helpers ---------- */
+function closeCart(){ document.getElementById('cartModalBackdrop').classList.remove('open'); }
+function closeCheckout(){ document.getElementById('checkoutModalBackdrop').classList.remove('open'); }
+function openCart(){ if(cart.quantity > 0) { renderCart(); document.getElementById('cartModalBackdrop').classList.add('open'); } else alert('Din varukorg är tom.'); }
+function proceedToCheckout(){ proceedToCheckout(); } // placeholder to avoid console error if used elsewhere
+
+/* Expose submitOrder for button */
+window.submitOrder = submitOrder;
 </script>
+
 </body>
 </html>
