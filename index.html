@@ -6,14 +6,14 @@
 <title>To-Go Bag UF</title>
 <style>
 body { margin:0; font-family: Arial, sans-serif; background: white; color: #001f3f; }
-header { background: #001f3f; color: white; padding: 40px 20px; text-align: center; }
+header { background: #001f3f; color: white; padding: 40px 20px; text-align: center; position: sticky; top:0; z-index:100; }
 header h1 { margin:0; font-size: 36px; }
 header p { font-size: 18px; margin-top: 10px; }
 .btn { display:inline-block; padding:12px 24px; margin:10px; border:none; border-radius:10px; font-size:16px; cursor:pointer; transition:0.3s; }
 .btn:hover { transform: scale(1.05); }
 .btn-primary { background:#001f3f; color:white; }
 .btn-secondary { background:white; color:#001f3f; border:2px solid #001f3f; }
-section { padding:40px 20px; text-align:center; z-index:1; position:relative; }
+section { padding:40px 20px; text-align:center; z-index:1; position:relative; display:none; }
 .product-description { max-width:600px; margin: 0 auto; }
 select, input[type="number"], input[type="text"], input[type="email"] { width:100%; padding:10px; margin-bottom:10px; border-radius:6px; border:1px solid #001f3f; }
 #cartIcon { position:fixed; top:20px; right:20px; font-size:24px; background:#001f3f; color:white; padding:12px 16px; border-radius:50%; cursor:pointer; z-index:100; }
@@ -32,8 +32,8 @@ footer { background:#001f3f; color:white; padding:20px; text-align:center; }
 <header>
 <h1>To-Go Bag</h1>
 <p>För alla små kriser i livet – vi packade väskan åt dig 😉</p>
-<button class="btn btn-primary" onclick="scrollToSection('product')">Produkt</button>
-<button class="btn btn-secondary" onclick="scrollToSection('contact')">Kontakt</button>
+<button class="btn btn-primary" onclick="showSection('product')">Produkt</button>
+<button class="btn btn-secondary" onclick="showSection('contact')">Kontakt</button>
 </header>
 
 
@@ -68,14 +68,5 @@ footer { background:#001f3f; color:white; padding:20px; text-align:center; }
 </section>
 
 
-<div id="cartIcon">🛒 <span id="cartCount">0</span></div>
-<div id="cartModal"><div class="modalContent"><span id="closeCart" class="closeBtn">&times;</span><h2>Din varukorg</h2><div id="cartContent"></div></div></div>
-<div id="checkoutModal"><div class="modalContent"><span id="closeCheckout" class="closeBtn">&times;</span><h2>Slutför beställning</h2><form id="checkout-form"><input type="text" id="name" placeholder="Namn" required><input type="email" id="email" placeholder="E-post" required><input type="text" id="phone" placeholder="Telefonnummer" required><input type="text" id="address" placeholder="Adress" required><input type="text" id="postal" placeholder="Postnummer" required><input type="text" id="city" placeholder="Stad" required><label for="shipping">Fraktmetod:</label><select id="shipping"><option value="Standard">Standard</option><option value="Express">Express</option></select><label for="variant">Variant:</label><select id="variant"><option value="Pad/Tampon">Pad/Tampon</option><option value="Male">Male</option></select><label for="subVariant">Produktval:</label><select id="subVariant"><option value="Pad">Pad</option><option value="Tampon">Tampon</option></select><label for="color">Färg:</label><select id="color"><option value="Blå">Blå</option><option value="Rosa">Rosa</option><option value="Svart">Svart</option><option value="Vit">Vit</option></select><label for="quantityCheckout">Antal:</label><input type="number" id="quantityCheckout" value="1" min="1"><button type="button" onclick="sendShippingAndPay()" class="btn btn-primary" style="width:100%;">Slutför köp</button></form></div></div>
-
-
-<section id="contact"><h2>Kontakt</h2><p>E-post: kontakt@togobaguf.com</p><p>Telefon: 076-413 49 47</p></section>
-<footer>&copy; 2025 To-Go Bag UF</footer>
-
-
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-<script>
+<section id="contact">
+<h2>Kontakt</h2>
