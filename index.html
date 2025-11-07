@@ -423,6 +423,89 @@
     document.querySelectorAll('a[href*="instagram.com"]').forEach(a=>a.href = 'https://instagram.com/' + INSTAGRAM_HANDLE);
 
   </script>
+<!-- Preorder Button -->
+<button id="preorderBtn" 
+        style="padding:12px 24px; font-size:18px; background-color:#001f3f; color:white; border:none; border-radius:8px; cursor:pointer;">
+  Förbeställ To-Go Bag
+</button>
+
+<!-- Popup Modal -->
+<div id="checkoutModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; 
+     background-color: rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:1000;">
+  <div style="background:white; padding:30px; border-radius:12px; max-width:500px; width:90%; position:relative;">
+    <span id="closeModal" style="position:absolute; top:10px; right:15px; font-size:24px; cursor:pointer;">&times;</span>
+    <h2 style="color:#001f3f; text-align:center;">Förbeställ To-Go Bag</h2>
+
+    <form id="checkout-form" style="margin-top:15px;">
+      <input type="text" id="name" placeholder="Namn" required style="width:100%; margin-bottom:8px; padding:8px;">
+      <input type="email" id="email" placeholder="E-post" required style="width:100%; margin-bottom:8px; padding:8px;">
+      <input type="text" id="phone" placeholder="Telefonnummer" required style="width:100%; margin-bottom:8px; padding:8px;">
+      <input type="text" id="address" placeholder="Adress" required style="width:100%; margin-bottom:8px; padding:8px;">
+      <input type="text" id="postal" placeholder="Postnummer" required style="width:100%; margin-bottom:8px; padding:8px;">
+      <input type="text" id="city" placeholder="Stad" required style="width:100%; margin-bottom:8px; padding:8px;">
+
+      <label for="shipping">Fraktmetod:</label>
+      <select id="shipping" style="width:100%; margin-bottom:8px; padding:8px;">
+        <option value="Standard">Standard</option>
+        <option value="Express">Express</option>
+      </select>
+
+      <label for="variant">Variant:</label>
+      <select id="variant" style="width:100%; margin-bottom:8px; padding:8px;">
+        <option value="Pad/Tampon">Pad/Tampon</option>
+        <option value="Male">Male</option>
+      </select>
+
+      <label for="quantity">Antal:</label>
+      <input type="number" id="quantity" value="1" min="1" style="width:100%; margin-bottom:15px; padding:8px;">
+
+      <button type="button" onclick="sendShippingAndPay()" 
+              style="width:100%; padding:12px; background-color:#001f3f; color:white; border:none; border-radius:8px; font-size:16px; cursor:pointer;">
+        Slutför köp
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- EmailJS + JS -->
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script>
+  (function(){emailjs.init("ZUlGUNzP7Tqxg-LkD");})();
+
+  // Show modal
+  document.getElementById('preorderBtn').onclick = function() {
+    document.getElementById('checkoutModal').style.display = 'flex';
+  };
+
+  // Close modal
+  document.getElementById('closeModal').onclick = function() {
+    document.getElementById('checkoutModal').style.display = 'none';
+  };
+
+  // Send info + open Swish
+  function sendShippingAndPay() {
+    let name = document.getElementById('name').value;
+    let email = document.getElementById('email').value;
+    let phone = document.getElementById('phone').value;
+    let address = document.getElementById('address').value;
+    let postal = document.getElementById('postal').value;
+    let city = document.getElementById('city').value;
+    let shipping = document.getElementById('shipping').value;
+    let variant = document.getElementById('variant').value;
+    let quantity = parseInt(document.getElementById('quantity').value) || 1;
+    let total = quantity * 85;
+
+    emailjs.send("service_obk5jf2", "template_kj9rgm7", {
+      name, email, phone, address, postal, city, shipping, variant, quantity, total
+    }).then(function(){
+      // Open Swish
+      window.location.href = `https://swish.nu/?number=0764134947&amount=${total}&text=To-Go%20Bag%20(${variant},%20förbeställning)`;
+    }, function(error){
+      alert("Det gick inte att skicka adressen. Försök igen.");
+      console.log(error);
+    });
+  }
+</script>
 
 </body>
 </html>
