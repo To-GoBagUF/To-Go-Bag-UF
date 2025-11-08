@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>To-Go Bag UF</title>
+
 <style>
   :root{
     --navy:#001f3f;
@@ -37,19 +38,36 @@
   /* modals */
   .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;z-index:1600;opacity:0;pointer-events:none;transition:opacity .22s}
   .modal-backdrop.open{opacity:1;pointer-events:auto}
-  .modal{width:100%;max-width:540px;background:#fff;border-radius:var(--radius);padding:20px;box-shadow:0 18px 48px rgba(0,0,0,0.2);transform:translateY(-18px);transition:transform .22s}
+  .modal{width:100%;max-width:500px;max-height:90vh;overflow-y:auto;background:#fff;border-radius:var(--radius);padding:20px;box-shadow:0 18px 48px rgba(0,0,0,0.2);transform:translateY(-18px);transition:transform .22s;position:relative}
   .modal-backdrop.open .modal{transform:translateY(0)}
   .closeX{position:absolute;right:18px;top:12px;cursor:pointer;color:#666;font-size:18px}
   .cart-item{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
   .summary{background:#f7fbff;padding:12px;border-radius:10px;margin-top:12px}
-  @media (max-width:900px){.product-card{grid-template-columns:1fr}.prod-visual{order:-1}}
+  @media (max-width:900px){
+    .product-card{grid-template-columns:1fr}
+    .prod-visual{order:-1}
+    .modal{max-width:95%;padding:16px;max-height:85vh}
+  }
+  .pay-btn{
+    background:#00b22d;
+    color:white;
+    font-weight:700;
+    width:100%;
+    padding:14px;
+    border:0;
+    border-radius:10px;
+    font-size:17px;
+    margin-top:10px;
+  }
+  .pay-btn:active{transform:scale(.99)}
 </style>
 </head>
-<body>
 
+<body>
 <header>
   <h1>To-Go Bag</h1>
   <p>För alla små kriser i livet – vi packade väskan åt dig 😉</p>
+  <p style="font-size:15px;opacity:0.9;">Klicka på <b>Produkt</b> här ovan för att se och beställa.</p>
   <div class="header-buttons">
     <button class="btn btn-primary" onclick="showSection('product')">Produkt</button>
     <button class="btn btn-secondary" onclick="showSection('contact')">Kontakt</button>
@@ -59,352 +77,162 @@
 <div class="preorder">Just nu förbeställning</div>
 
 <main>
-  <!-- HOME intro (kept minimal) -->
-  <section id="home">
-    <div class="section-inner">
-      <h2>Välkommen</h2>
-      <p class="lead">Klicka på <strong>Produkt</strong> här ovan för att se och beställa.</p>
-    </div>
-  </section>
+<section id="product">
+  <div class="section-inner">
+    <h2>The To-Go Bag</h2>
+    <p class="lead">En liten väska med handsprit, plåster, hårsnoddar, binda/tampong, müslibar, tuggummi och våtservetter.</p>
 
-  <!-- PRODUCT -->
-  <section id="product">
-    <div class="section-inner">
-      <h2>The To-Go Bag</h2>
-      <p class="lead">En liten väska med handsanitizer, plåster, hårsnoddar, binda/tampong, müslibar, tuggummi och våtservetter.</p>
+    <div class="product-card">
+      <div class="prod-visual">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Travel_Bag_Icon.svg/512px-Travel_Bag_Icon.svg.png" width="150" alt="To-Go Bag">
+      </div>
+      <div>
+        <label for="variantSelect">Variant:</label>
+        <select id="variantSelect">
+          <option value="Binda/Tampong">Binda/Tampong</option>
+          <option value="Herr">Herr</option>
+        </select>
 
-      <div class="product-card">
-        <div class="prod-info">
-          <p style="font-weight:800;margin:0 0 6px">The To-Go Bag</p>
-          <p class="muted">En kompakt lösning för oväntade småproblem.</p>
-
-          <div style="margin-top:14px">
-            <label for="variantSelect">Variant</label>
-            <select id="variantSelect">
-              <option value="Binda/Tampong">Binda/Tampong</option>
-              <option value="Herr">Herr</option>
-            </select>
-
-            <div id="subVariantWrap" style="margin-top:10px">
-              <label for="subVariantSelect">Välj</label>
-              <select id="subVariantSelect">
-                <option value="Binda">Binda</option>
-                <option value="Tampong">Tampong</option>
-              </select>
-            </div>
-
-            <div style="margin-top:10px">
-              <label for="colorSelect">Färg</label>
-              <select id="colorSelect">
-                <option value="Blå">Blå</option>
-                <option value="Rosa">Rosa</option>
-                <option value="Svart">Svart</option>
-                <option value="Vit">Vit</option>
-              </select>
-            </div>
-
-            <div style="margin-top:14px;display:flex;gap:12px;align-items:center">
-              <button id="orderBtn" class="btn btn-primary">Lägg i varukorg — 85 kr</button>
-              <div class="muted">Pris/st: <strong>85 kr</strong></div>
-            </div>
-          </div>
+        <div id="subVariantContainer">
+          <label for="subVariantSelect">Välj produkt:</label>
+          <select id="subVariantSelect">
+            <option value="Binda">Binda</option>
+            <option value="Tampong">Tampong</option>
+          </select>
         </div>
 
-        <div class="prod-visual">
-          <div style="height:220px;display:flex;align-items:center;justify-content:center;color:#234;font-weight:700">Produktbild</div>
-          <div style="margin-top:12px;font-weight:800;color:var(--navy)">85 kr</div>
-        </div>
+        <label for="colorSelect">Färg:</label>
+        <select id="colorSelect">
+          <option value="Blå">Blå</option>
+          <option value="Rosa">Rosa</option>
+          <option value="Svart">Svart</option>
+          <option value="Vit">Vit</option>
+        </select>
+
+        <button id="orderBtn" class="btn btn-primary">Lägg i varukorg – 85 kr</button>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ABOUT -->
-  <section id="about">
-    <div class="section-inner">
-      <h2>Om oss</h2>
-      <p class="lead">Vi är ett UF-företag som vill göra vardagen lite enklare med genomtänkta nödväskor.</p>
-    </div>
-  </section>
-
-  <!-- CONTACT -->
-  <section id="contact">
-    <div class="section-inner">
-      <h2>Kontakt</h2>
-      <p>Mejla oss på <a href="mailto:togobaguf@gmail.com">togobaguf@gmail.com</a></p>
-    </div>
-  </section>
+<section id="contact">
+  <div class="section-inner">
+    <h2>Kontakt</h2>
+    <p>Maila oss på <a href="mailto:togobaguf@gmail.com">togobaguf@gmail.com</a></p>
+  </div>
+</section>
 </main>
 
-<!-- cart icon -->
-<div id="cartIcon" title="Varukorg" onclick="openCart()">🛒 <span id="cartCount">0</span></div>
+<div id="cartIcon">🛒 <span id="cartCount">0</span></div>
 
-<!-- CART MODAL -->
-<div id="cartModalBackdrop" class="modal-backdrop" aria-hidden="true">
-  <div class="modal" role="dialog" aria-modal="true">
-    <div style="position:relative">
-      <span class="closeX" onclick="closeCart()">✕</span>
-      <h3 style="margin:0 0 6px">Din varukorg</h3>
-    </div>
-    <div id="cartContentArea" style="margin-top:12px">
-      <!-- rendered dynamically -->
-    </div>
-
-    <div style="display:flex;gap:10px;margin-top:14px">
-      <button class="btn btn-secondary fullwidth" onclick="closeCart()" style="flex:1">Fortsätt handla</button>
-      <button class="btn btn-primary fullwidth" onclick="openCheckout()" style="flex:1">Förbeställ / Checkout</button>
-    </div>
+<!-- Cart Modal -->
+<div class="modal-backdrop" id="cartModal">
+  <div class="modal">
+    <span class="closeX" id="closeCart">&times;</span>
+    <h2>Din varukorg</h2>
+    <div id="cartContent"></div>
   </div>
 </div>
 
-<!-- CHECKOUT MODAL -->
-<div id="checkoutModalBackdrop" class="modal-backdrop" aria-hidden="true">
-  <div class="modal" role="dialog" aria-modal="true">
-    <div style="position:relative">
-      <span class="closeX" onclick="closeCheckout()">✕</span>
-      <h3 style="margin:0 0 6px">Slutför beställning</h3>
-    </div>
-
-    <form id="checkoutForm" style="margin-top:12px" onsubmit="return false;">
-      <label for="name">Namn</label>
-      <input id="name" type="text" required>
-
-      <label for="email">E-post</label>
-      <input id="email" type="email" required>
-
-      <label for="phone">Telefonnummer (valfritt)</label>
-      <input id="phone" type="text">
-
-      <label for="address">Adress</label>
-      <input id="address" type="text" required>
-
-      <label for="postal">Postnummer</label>
-      <input id="postal" type="text" required>
-
-      <label for="city">Stad</label>
-      <input id="city" type="text" required>
-
-      <label for="shipping">Fraktmetod</label>
+<!-- Checkout Modal -->
+<div class="modal-backdrop" id="checkoutModal">
+  <div class="modal">
+    <span class="closeX" id="closeCheckout">&times;</span>
+    <h2>Slutför beställning</h2>
+    <form id="checkoutForm">
+      <input type="text" id="name" placeholder="Namn" required>
+      <input type="email" id="email" placeholder="E-post" required>
+      <input type="text" id="phone" placeholder="Telefonnummer" required>
+      <input type="text" id="address" placeholder="Adress" required>
+      <input type="text" id="postal" placeholder="Postnummer" required>
+      <input type="text" id="city" placeholder="Stad" required>
+      <label for="shipping">Fraktmetod:</label>
       <select id="shipping">
         <option value="Standard">Standard</option>
         <option value="Express">Express</option>
       </select>
-
-      <!-- hidden selects to reflect cart -->
-      <label for="variant" style="display:none">Variant</label>
-      <select id="variant" style="display:none"></select>
-
-      <label for="subVariant" style="display:none">SubVariant</label>
-      <select id="subVariant" style="display:none"></select>
-
-      <label for="color" style="display:none">Färg</label>
-      <select id="color" style="display:none"></select>
-
-      <label for="quantityCheckout" style="display:none">Antal</label>
-      <input id="quantityCheckout" type="number" value="1" min="1" style="display:none">
-
-      <div class="summary" id="checkoutSummary">
-        <div><strong>Produkt:</strong> <span id="summaryProduct">-</span></div>
-        <div><strong>Antal:</strong> <span id="summaryQuantity">1</span></div>
-        <div style="margin-top:8px"><strong>Totalt:</strong> <span id="summaryTotal">85</span> kr</div>
-      </div>
-
-      <div style="margin-top:12px">
-        <button type="button" class="btn btn-primary fullwidth" id="submitOrderBtn" onclick="submitOrder()">Slutför köp</button>
-      </div>
+      <input type="number" id="quantityCheckout" value="1" min="1">
+      <button type="button" class="pay-btn" onclick="sendShippingAndPay()">💸 Betala & Förbeställ</button>
     </form>
   </div>
 </div>
 
-<footer>
-  <div>© 2025 To-Go Bag UF</div>
-  <div style="margin-top:6px">Kontakt: <a style="color:#e6f2ff" href="mailto:togobaguf@gmail.com">togobaguf@gmail.com</a></div>
-</footer>
+<footer>&copy; 2025 To-Go Bag UF</footer>
 
-<!-- EmailJS -->
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script>
-/* ---------- KONFIG ---------- */
-emailjs.init("ZUlGUNzP7Tqxg-LkD"); // din public key
-const EMAIL_SERVICE = "service_obk5jf2"; // din service id
-const EMAIL_TEMPLATE = "template_kj9rgm7"; // din template id
-const SWISH_NUMBER = "0764134947";
-const PRICE = 85;
+emailjs.init("ZUlGUNzP7Tqxg-LkD");
 
-/* ---------- INIT/UX ---------- */
-document.addEventListener('DOMContentLoaded', () => {
-  // visa hem/intro i början
-  showSection('home');
-  // variant handling
-  document.getElementById('variantSelect').addEventListener('change', updateSubVariantVisibility);
-  updateSubVariantVisibility();
-});
-
-/* Visa sektion (visas utan scroll) */
 function showSection(id){
-  document.querySelectorAll('main section').forEach(s=>s.style.display='none');
-  const sec = document.getElementById(id);
-  if(sec) sec.style.display='block';
+  document.querySelectorAll("section").forEach(s=>s.style.display="none");
+  document.getElementById(id).style.display="block";
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
-/* Subvariant synlighet */
-function updateSubVariantVisibility(){
-  const v = document.getElementById('variantSelect').value;
-  document.getElementById('subVariantWrap').style.display = (v === 'Binda/Tampong') ? 'block' : 'none';
-}
+let cart = 0;
 
-/* ---------- CART ---------- */
-let cart = { quantity:0, variant:null, subVariant:null, color:null };
-
-document.getElementById('orderBtn').addEventListener('click', () => {
-  const variant = document.getElementById('variantSelect').value;
-  const sub = (variant === 'Binda/Tampong') ? document.getElementById('subVariantSelect').value : '';
-  const color = document.getElementById('colorSelect').value;
-  cart = { quantity:1, variant, subVariant:sub, color };
-  document.getElementById('cartCount').textContent = cart.quantity;
-  renderCart();
-  openCart();
+document.getElementById("variantSelect").addEventListener("change", function(){
+  document.getElementById("subVariantContainer").style.display =
+    (this.value === "Binda/Tampong") ? "block" : "none";
 });
 
-function renderCart(){
-  const area = document.getElementById('cartContentArea');
-  if(!cart || cart.quantity <= 0){
-    area.innerHTML = "<p>Din varukorg är tom.</p>";
-    return;
-  }
-  const subTxt = cart.subVariant ? ` (${cart.subVariant})` : '';
-  area.innerHTML = `
-    <div class="cart-item">
-      <div>
-        <div style="font-weight:700">The To-Go Bag</div>
-        <div class="muted">Variant: ${cart.variant}${subTxt}</div>
-        <div class="muted">Färg: ${cart.color}</div>
-      </div>
-      <div style="text-align:right">
-        <label for="cartQty">Antal</label>
-        <input id="cartQty" type="number" value="${cart.quantity}" min="1" style="width:80px;padding:6px;border-radius:6px;border:1px solid #d9e9fb">
-        <div style="margin-top:8px;font-weight:700">${PRICE * cart.quantity} kr</div>
-      </div>
-    </div>
-    <div class="muted" style="margin-top:8px">Ändra antal för att uppdatera totalsumma.</div>
-  `;
-  document.getElementById('cartQty').addEventListener('input', (e) => {
-    let q = parseInt(e.target.value);
-    if(isNaN(q) || q < 1) q = 1;
-    cart.quantity = q;
-    document.getElementById('cartCount').textContent = cart.quantity;
-    renderCart();
-  });
-}
+function openModal(id){document.getElementById(id).classList.add("open");}
+function closeModal(id){document.getElementById(id).classList.remove("open");}
 
-function openCart(){ renderCart(); document.getElementById('cartModalBackdrop').classList.add('open'); }
-function closeCart(){ document.getElementById('cartModalBackdrop').classList.remove('open'); }
-function openCheckout(){
-  if(!cart || cart.quantity <= 0){ alert("Din varukorg är tom."); return; }
-  // populate checkout summary and hidden fields
-  document.getElementById('variant').value = cart.variant || '';
-  document.getElementById('subVariant').value = cart.subVariant || '';
-  document.getElementById('color').value = cart.color || '';
-  document.getElementById('quantityCheckout').value = cart.quantity || 1;
-  document.getElementById('summaryProduct').textContent = `${cart.variant}${cart.subVariant ? ' ('+cart.subVariant+')' : ''} — ${cart.color}`;
-  document.getElementById('summaryQuantity').textContent = cart.quantity;
-  document.getElementById('summaryTotal').textContent = PRICE * cart.quantity;
-  closeCart();
-  document.getElementById('checkoutModalBackdrop').classList.add('open');
-}
-function closeCheckout(){ document.getElementById('checkoutModalBackdrop').classList.remove('open'); }
+document.getElementById("orderBtn").onclick = function(){
+  cart = 1;
+  const variant = document.getElementById("variantSelect").value;
+  const sub = (variant === "Binda/Tampong") ? document.getElementById("subVariantSelect").value : "";
+  const color = document.getElementById("colorSelect").value;
+  document.getElementById("cartCount").innerText = cart;
+  document.getElementById("cartContent").innerHTML = `
+    <p><b>The To-Go Bag</b> – 85 kr</p>
+    <p>Variant: ${variant}${sub ? " (" + sub + ")" : ""}</p>
+    <p>Färg: ${color}</p>
+    <label>Antal:</label>
+    <input type="number" id="cartQuantity" value="1" min="1">
+    <p>Total: <span id="cartTotal">85</span> kr</p>
+    <button class="btn btn-primary" id="proceedCheckout">Förbeställ / Checkout</button>`;
+  openModal("cartModal");
 
-/* Close modals by clicking backdrop */
-document.getElementById('cartModalBackdrop').addEventListener('click', (e)=>{ if(e.target === document.getElementById('cartModalBackdrop')) closeCart(); });
-document.getElementById('checkoutModalBackdrop').addEventListener('click', (e)=>{ if(e.target === document.getElementById('checkoutModalBackdrop')) closeCheckout(); });
+  const qty = document.getElementById("cartQuantity");
+  const total = document.getElementById("cartTotal");
+  qty.addEventListener("input", ()=>{let q=parseInt(qty.value)||1;total.textContent=85*q;});
 
-/* ---------- SUBMIT ORDER ---------- */
-function submitOrder(){
-  const name = document.getElementById('name').value.trim();
-  const email = document.getElementById('email').value.trim();
-  const phone = document.getElementById('phone').value.trim();
-  const address = document.getElementById('address').value.trim();
-  const postal = document.getElementById('postal').value.trim();
-  const city = document.getElementById('city').value.trim();
-  const shipping = document.getElementById('shipping').value;
-  const variant = document.getElementById('variant').value;
-  const subVariant = document.getElementById('subVariant').value;
-  const color = document.getElementById('color').value;
-  const quantity = parseInt(document.getElementById('quantityCheckout').value) || 1;
-  const total = PRICE * quantity;
+  document.getElementById("proceedCheckout").onclick = ()=>{
+    const q=parseInt(qty.value)||1;
+    document.getElementById("quantityCheckout").value=q;
+    closeModal("cartModal");
+    openModal("checkoutModal");
+  };
+};
 
-  if(!name || !email || !address || !postal || !city){
-    alert("Fyll i alla obligatoriska fält: namn, e-post, adress, postnummer, stad.");
-    return;
-  }
+document.getElementById("cartIcon").onclick = ()=>{ cart>0 ? openModal("cartModal") : alert("Din varukorg är tom."); };
+document.getElementById("closeCart").onclick = ()=>closeModal("cartModal");
+document.getElementById("closeCheckout").onclick = ()=>closeModal("checkoutModal");
 
-  const params = { name, email, phone, address, postal, city, shipping, variant, subVariant, color, quantity, total };
+function sendShippingAndPay(){
+  const data = {
+    name: document.getElementById("name").value,
+    email: document.getElementById("email").value,
+    phone: document.getElementById("phone").value,
+    address: document.getElementById("address").value,
+    postal: document.getElementById("postal").value,
+    city: document.getElementById("city").value,
+    shipping: document.getElementById("shipping").value,
+    quantity: document.getElementById("quantityCheckout").value,
+    total: parseInt(document.getElementById("quantityCheckout").value)*85
+  };
 
-  // disable button
-  const btn = document.getElementById('submitOrderBtn');
-  btn.disabled = true;
-  btn.textContent = "Skickar...";
-
-  emailjs.send(EMAIL_SERVICE, EMAIL_TEMPLATE, params).then(()=>{
-    // show confirmation in modal
-    const modal = document.querySelector('#checkoutModalBackdrop .modal');
-    modal.innerHTML = `
-      <div style="position:relative">
-        <span class="closeX" onclick="closeCheckout()">✕</span>
-        <h3>Tack! Din beställning är mottagen</h3>
-      </div>
-      <div style="margin-top:10px">
-        <p><strong>Namn:</strong> ${escapeHtml(name)}</p>
-        <p><strong>E-post:</strong> ${escapeHtml(email)}</p>
-        ${phone ? `<p><strong>Telefon:</strong> ${escapeHtml(phone)}</p>` : ''}
-        <p><strong>Adress:</strong> ${escapeHtml(address)}, ${escapeHtml(postal)} ${escapeHtml(city)}</p>
-        <p><strong>Frakt:</strong> ${escapeHtml(shipping)}</p>
-        <p><strong>Produkt:</strong> ${escapeHtml(variant)} ${subVariant ? '('+escapeHtml(subVariant)+')' : ''} — ${escapeHtml(color)}</p>
-        <p><strong>Antal:</strong> ${quantity}</p>
-        <p><strong>Total:</strong> ${total} kr</p>
-        <p style="margin-top:12px">En Swish-betalning öppnas nu (endast på mobil). Följ instruktionerna i appen.</p>
-      </div>
-    `;
-
-    // attempt to open Swish
-    tryOpenSwish(total, variant, subVariant, color);
-
-    // reset cart
-    cart = { quantity:0, variant:null, subVariant:null, color:null };
-    document.getElementById('cartCount').textContent = 0;
-    btn.disabled = false;
-    btn.textContent = "Slutför köp";
-  }, (err)=>{
-    console.error(err);
-    alert("Ett fel uppstod vid skickande. Försök igen.");
-    btn.disabled = false;
-    btn.textContent = "Slutför köp";
-  });
-}
-
-/* ---------- SWISH ---------- */
-function tryOpenSwish(amount, variant, subVariant, color){
-  const message = encodeURIComponent(`To-Go Bag (${variant}${subVariant ? ', '+subVariant : ''}, ${color}) förbeställning`);
-  const callback = encodeURIComponent(window.location.href);
-  const swishApp = `swish://paymentrequest?token=1&callbackurl=${callback}&payee=${SWISH_NUMBER}&amount=${amount}&message=${message}`;
-  const swishWeb = `https://swish.nu/?number=${SWISH_NUMBER}&amount=${amount}&text=${message}`;
-
-  // Try redirect to app
-  // On many mobile browsers this opens the app, otherwise we open fallback
-  const now = Date.now();
-  window.location = swishApp;
-
-  setTimeout(()=> {
-    // if still here -> open fallback (new tab)
-    if(Date.now() - now < 3000){
-      window.open(swishWeb,'_blank');
-    }
-  }, 1200);
-}
-
-/* ---------- UTIL ---------- */
-function escapeHtml(str){
-  if(!str) return '';
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  emailjs.send("service_obk5jf2","template_kj9rgm7",data)
+  .then(()=>{
+    alert("Tack för din förbeställning! Swish öppnas nu om du använder mobil.");
+    if(/Mobi|Android/i.test(navigator.userAgent)){
+      window.location.href=`swish://paymentrequest?token=1&callbackurl=https://togobaguf.com&payee=0764134947&amount=${data.total}&message=To-Go%20Bag%20Förbeställning`;
+    } else alert("Swish-betalning fungerar bara på mobilen.");
+    closeModal("checkoutModal");
+  })
+  .catch(e=>alert("Kunde inte skicka beställning, försök igen."));
 }
 </script>
 </body>
