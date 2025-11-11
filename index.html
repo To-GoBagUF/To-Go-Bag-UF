@@ -211,18 +211,47 @@ document.getElementById("cartIcon").onclick = ()=>{ cart>0 ? openModal("cartModa
 document.getElementById("closeCart").onclick = ()=>closeModal("cartModal");
 document.getElementById("closeCheckout").onclick = ()=>closeModal("checkoutModal");
 
-function sendShippingAndPay(){
+function sendShippingAndPay() {
   const data = {
-    name: document.getElementById("name").value,
-    email: document.getElementById("email").value,
-    phone: document.getElementById("phone").value,
-    address: document.getElementById("address").value,
-    postal: document.getElementById("postal").value,
-    city: document.getElementById("city").value,
+    name: document.getElementById("name").value.trim(),
+    email: document.getElementById("email").value.trim(),
+    phone: document.getElementById("phone").value.trim(),
+    address: document.getElementById("address").value.trim(),
+    postal: document.getElementById("postal").value.trim(),
+    city: document.getElementById("city").value.trim(),
     shipping: document.getElementById("shipping").value,
-    quantity: document.getElementById("quantityCheckout").value,
-    total: parseInt(document.getElementById("quantityCheckout").value)*85
+    quantity: parseInt(document.getElementById("quantityCheckout").value) || 1,
   };
+  data.total = data.quantity * 85;
+
+  if (!data.name || !data.email || !data.address) {
+    alert("Fyll i alla fält innan du fortsätter.");
+    return;
+  }
+
+  // Skicka bekräftelse via EmailJS
+  emailjs.send("service_obk5jf2", "template_kj9rgm7", data)
+    .then(() => {
+      alert("Tack för din förbeställning! Swish öppnas nu om du använder mobil.");
+
+      // Swish-betalning — fungerar endast på mobil
+      const swishUrl = `swish://paymentrequest?token=1&callbackurl=https://togobaguf.com&payee=0764134947&amount=${data.total}&message=To-Go%20Bag%20Förbeställning`;
+      const encodedUrl = encodeURI(swishUrl);
+
+      if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+        window.location.href = encodedUrl;
+      } else {
+        alert("Swish kan bara öppnas automatiskt på mobil. Öppna sidan i mobilen för att betala.");
+      }
+
+      closeModal("checkoutModal");
+    })
+    .catch((error) => {
+      console.error(error);
+      alert("Kunde inte skicka beställning. Kontrollera din internetanslutning och försök igen.");
+    });
+}
+
 
   emailjs.send("service_obk5jf2","template_kj9rgm7",data)
   .then(()=>{
