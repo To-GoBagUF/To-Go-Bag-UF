@@ -6,54 +6,57 @@
 <title>To-Go Bag UF</title>
 <style>
   :root{
-    --navy:#001f3f;
-    --white:#ffffff;
-    --muted:#6b879a;
-    --accent:#00b22d;
-    --radius:12px;
+    --navy:#001f3f; --white:#fff; --muted:#6b879a; --accent:#00b22d; --radius:12px;
   }
   *{box-sizing:border-box}
-  body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;color:var(--navy);background:var(--white);-webkit-font-smoothing:antialiased}
-  header{background:var(--navy);color:var(--white);padding:56px 20px;text-align:center}
-  header h1{font-size:44px;margin:0}
-  header p{margin:10px 0 6px;font-size:18px;opacity:0.95}
-  .header-note{font-size:15px;color:rgba(255,255,255,0.92);margin-bottom:12px}
-  .header-buttons{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-  .btn{padding:12px 22px;border-radius:10px;font-size:16px;border:0;cursor:pointer;transition:transform .18s,box-shadow .18s}
-  .btn-primary{background:var(--white);color:var(--navy);font-weight:700;box-shadow:0 8px 20px rgba(0,0,0,0.12)}
+  body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;color:var(--navy);background:var(--white)}
+  header{background:var(--navy);color:var(--white);padding:28px 20px;text-align:center}
+  header .top{display:flex;align-items:center;gap:16px;justify-content:center;flex-wrap:wrap}
+  header img.logo{height:64px;object-fit:contain;display:block}
+  header h1{margin:0;font-size:28px}
+  header p{margin:6px 0 10px;font-size:15px}
+  .header-note{font-size:14px;opacity:0.95;margin-bottom:10px}
+  .header-buttons{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:6px}
+  .btn{padding:10px 18px;border-radius:10px;font-size:15px;border:0;cursor:pointer;transition:transform .14s,box-shadow .14s}
+  .btn-primary{background:var(--white);color:var(--navy);font-weight:700;box-shadow:0 6px 18px rgba(0,0,0,0.12)}
   .btn-secondary{background:transparent;color:var(--white);border:2px solid rgba(255,255,255,0.12)}
-  .btn:active{transform:scale(.99)}
   .preorder{background:var(--navy);color:var(--white);text-align:center;padding:10px;font-weight:700}
-  main{max-width:1100px;margin:36px auto;padding:0 20px}
-  section{display:none;padding:40px 0}
+  main{max-width:1100px;margin:28px auto;padding:0 20px}
+  section{display:none;padding:36px 0}
   .section-inner{max-width:900px;margin:0 auto}
-  h2{margin:0 0 12px;font-size:26px}
-  p.lead{margin:0 0 14px;color:#073049}
-  .product-card{display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:start}
+  h2{margin:0 0 10px;font-size:22px}
+  p.lead{margin:0 0 12px;color:#073049}
+  .product-card{display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start}
   .prod-visual{background:#f4f9ff;border-radius:14px;padding:16px;text-align:center}
   label{display:block;margin:8px 0 6px;font-weight:700;color:#00314f}
   select,input[type="text"],input[type="email"],input[type="number"]{width:100%;padding:10px;border-radius:8px;border:1px solid #cfe0ef;font-size:15px}
   .muted{color:var(--muted);font-size:14px}
-  footer{background:var(--navy);color:var(--white);padding:22px;text-align:center}
-  #cartIcon{position:fixed;right:20px;bottom:20px;background:var(--navy);color:white;padding:12px 14px;border-radius:999px;z-index:1500;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,0.15)}
+  footer{background:var(--navy);color:var(--white);padding:18px;text-align:center;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+  footer img.logo-small{height:36px}
+  #cartIcon{position:fixed;right:18px;bottom:18px;background:var(--navy);color:white;padding:10px 12px;border-radius:999px;z-index:1500;cursor:pointer;box-shadow:0 8px 26px rgba(0,0,0,0.18)}
   /* modals */
   .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;z-index:1600;opacity:0;pointer-events:none;transition:opacity .22s}
   .modal-backdrop.open{opacity:1;pointer-events:auto}
   .modal{width:100%;max-width:520px;max-height:88vh;overflow-y:auto;background:#fff;border-radius:var(--radius);padding:20px;box-shadow:0 18px 48px rgba(0,0,0,0.2);transform:translateY(-18px);transition:transform .22s;position:relative}
   .modal-backdrop.open .modal{transform:translateY(0)}
-  .closeX{position:absolute;right:18px;top:12px;cursor:pointer;color:#666;font-size:18px}
+  .closeX{position:absolute;right:16px;top:10px;cursor:pointer;color:#666;font-size:18px}
   .cart-item{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
   .summary{background:#f7fbff;padding:12px;border-radius:10px;margin-top:12px}
-  @media (max-width:900px){.product-card{grid-template-columns:1fr}.prod-visual{order:-1}.modal{max-width:95%;padding:16px;max-height:85vh}}
-  .pay-btn{background:var(--accent);color:white;font-weight:700;width:100%;padding:14px;border:0;border-radius:10px;font-size:17px;margin-top:10px}
+  @media (max-width:900px){.product-card{grid-template-columns:1fr}.prod-visual{order:-1}.modal{max-width:95%;padding:14px;max-height:85vh}}
+  .pay-btn{background:var(--accent);color:white;font-weight:700;width:100%;padding:12px;border:0;border-radius:10px;font-size:16px;margin-top:10px}
   .pay-btn:active{transform:scale(.99)}
-  .info-small{font-size:13px;color:#5b6f80;margin-top:6px}
+  .small{font-size:13px;color:#5b6f80}
+  .logo-in-confirm{height:80px;display:block;margin:8px auto}
 </style>
 </head>
 <body>
 
 <header>
-  <h1>To-Go Bag</h1>
+  <div class="top">
+    <!-- logo.png must be uploaded to the same folder as this file -->
+    <img src="logo.png" alt="To-Go Bag logo" class="logo" />
+  </div>
+  <h1>To-Go Bag UF</h1>
   <p>För alla små kriser i livet – vi packade väskan åt dig 😉</p>
   <div class="header-note">Klicka på <strong>Produkt</strong> här ovan för att se och beställa.</div>
   <div class="header-buttons">
@@ -82,7 +85,7 @@
           <p style="font-weight:800;margin:0 0 8px">The To-Go Bag</p>
           <p class="muted">Perfekt för skolan, festen eller när du är på språng.</p>
 
-          <div style="margin-top:16px">
+          <div style="margin-top:14px">
             <label for="variantSelect">Variant</label>
             <select id="variantSelect">
               <option value="Binda/Tampong">Binda/Tampong</option>
@@ -111,7 +114,7 @@
               <button id="orderBtn" class="btn btn-primary">Lägg i varukorg – 85 kr</button>
               <div class="muted">Pris/st: <strong>85 kr</strong></div>
             </div>
-            <div class="info-small">Variant &amp; val följer med i orderbekräftelsen och Swish-meddelandet.</div>
+            <div class="small">Variant &amp; val inkluderas i orderbekräftelsen och Swish-meddelandet.</div>
           </div>
         </div>
 
@@ -158,6 +161,7 @@
 <div id="checkoutModalBackdrop" class="modal-backdrop" aria-hidden="true">
   <div class="modal" role="dialog" aria-modal="true">
     <span class="closeX" id="closeCheckoutBtn">&times;</span>
+    <img src="logo.png" alt="logo" class="logo-in-confirm" />
     <h3 style="margin-top:6px">Slutför beställning</h3>
 
     <form id="checkoutForm" style="margin-top:12px" onsubmit="return false;">
@@ -185,7 +189,7 @@
         <option value="Express">Express</option>
       </select>
 
-      <!-- hidden fields to keep cart data -->
+      <!-- hidden fields -->
       <select id="variant" style="display:none"></select>
       <select id="subVariant" style="display:none"></select>
       <select id="color" style="display:none"></select>
@@ -198,51 +202,61 @@
       </div>
 
       <button type="button" class="pay-btn" id="submitOrderBtn" onclick="submitOrder()">💸 Betala & Förbeställ</button>
+
+      <div style="margin-top:8px; text-align:center">
+        <button type="button" id="manualSwishBtn" style="display:none;padding:8px 12px;border-radius:8px;border:1px solid #d6e9f7;background:#f8fbff;color:var(--navy);cursor:pointer">Öppna Swish manuellt</button>
+      </div>
     </form>
   </div>
 </div>
 
-<footer>&copy; 2025 To-Go Bag UF — Kontakt: <a style="color:#e6f2ff" href="mailto:togobaguf@gmail.com">togobaguf@gmail.com</a></footer>
+<footer>
+  <img src="logo.png" alt="logo" class="logo-small" style="height:36px">
+  <div>© 2025 To-Go Bag UF — Kontakt: <a style="color:#e6f2ff" href="mailto:togobaguf@gmail.com">togobaguf@gmail.com</a></div>
+</footer>
 
 <!-- EmailJS -->
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script>
-/* Konfiguration */
+/* ---------- KONFIG ---------- */
 emailjs.init("ZUlGUNzP7Tqxg-LkD"); // public key
 const EMAIL_SERVICE = "service_obk5jf2";
 const EMAIL_TEMPLATE = "template_kj9rgm7";
 const SWISH_NUMBER = "0764134947";
 const PRICE = 85;
 
-/* Init UI */
+/* ---------- INIT ---------- */
 document.addEventListener('DOMContentLoaded', () => {
-  // show minimal home section on load
   showSection('home');
-  // variant handling
   document.getElementById('variantSelect').addEventListener('change', updateSubVariantVisibility);
   updateSubVariantVisibility();
-  // close buttons
+
   document.getElementById('closeCartBtn').addEventListener('click', closeCart);
   document.getElementById('closeCheckoutBtn').addEventListener('click', closeCheckout);
-  // backdrop clicks to close
+
   document.getElementById('cartModalBackdrop').addEventListener('click', (e)=>{ if(e.target === document.getElementById('cartModalBackdrop')) closeCart(); });
   document.getElementById('checkoutModalBackdrop').addEventListener('click', (e)=>{ if(e.target === document.getElementById('checkoutModalBackdrop')) closeCheckout(); });
+
+  // manual swish button handler
+  document.getElementById('manualSwishBtn').addEventListener('click', function(){
+    if(window._lastSwishUrl) window.open(window._lastSwishUrl, '_blank');
+  });
 });
 
-/* Sections */
+/* ---------- SECTIONS ---------- */
 function showSection(id){
   document.querySelectorAll('main section').forEach(s=>s.style.display='none');
   const sec = document.getElementById(id);
   if(sec) sec.style.display='block';
 }
 
-/* Variant subvisibility */
+/* ---------- VARIANT ---------- */
 function updateSubVariantVisibility(){
   const v = document.getElementById('variantSelect').value;
   document.getElementById('subVariantWrap').style.display = (v === 'Binda/Tampong') ? 'block' : 'none';
 }
 
-/* Cart */
+/* ---------- CART ---------- */
 let cart = { quantity:0, variant:null, subVariant:null, color:null };
 
 document.getElementById('orderBtn').addEventListener('click', ()=>{
@@ -296,7 +310,7 @@ function openCheckout(){
 }
 function closeCheckout(){ document.getElementById('checkoutModalBackdrop').classList.remove('open'); }
 
-/* Submit order: EmailJS + Swish (mobile) */
+/* ---------- ORDER: EmailJS + Swish ---------- */
 function submitOrder(){
   const name = document.getElementById('name').value.trim();
   const email = document.getElementById('email').value.trim();
@@ -316,16 +330,20 @@ function submitOrder(){
     return;
   }
 
-  const params = { name, email, phone, address, postal, city, shipping, variant, subVariant, color, quantity, total };
+  // prepare template params, include logo url so email template can use it
+  const logo_url = `${window.location.origin}/logo.png`;
+  const params = { name, email, phone, address, postal, city, shipping, variant, subVariant, color, quantity, total, logo_url };
 
+  // disable to avoid double clicks
   const btn = document.getElementById('submitOrderBtn');
   btn.disabled = true; btn.textContent = "Skickar...";
 
   emailjs.send(EMAIL_SERVICE, EMAIL_TEMPLATE, params).then(()=>{
-    // Replace modal content with confirmation
+    // show confirmation view (with logo)
     const modal = document.querySelector('#checkoutModalBackdrop .modal');
     modal.innerHTML = `
       <span class="closeX" onclick="closeCheckout()">&times;</span>
+      <img src="logo.png" alt="logo" style="height:80px;display:block;margin:8px auto" />
       <h3>Tack! Din beställning är mottagen</h3>
       <div style="margin-top:10px">
         <p><strong>Namn:</strong> ${escapeHtml(name)}</p>
@@ -336,47 +354,69 @@ function submitOrder(){
         <p><strong>Produkt:</strong> ${escapeHtml(variant)} ${subVariant ? '('+escapeHtml(subVariant)+')' : ''} — ${escapeHtml(color)}</p>
         <p><strong>Antal:</strong> ${quantity}</p>
         <p><strong>Total:</strong> ${total} kr</p>
-        <p style="margin-top:12px">Du skickas nu vidare till Swish (öppnas bara på mobil). Följ instruktionerna i appen.</p>
+        <p style="margin-top:12px">Nu öppnar vi Swish (funkar endast på mobil). Om Swish inte öppnas automatiskt, klicka på knappen nedan.</p>
+        <div style="margin-top:12px">
+          <button id="manualSwishLink" style="background:#0b6bff;color:#fff;padding:10px 14px;border-radius:8px;border:0;cursor:pointer">Öppna Swish manuellt</button>
+        </div>
       </div>
     `;
 
-    // Attempt to open Swish (mobile). Use encoded URL.
-    const message = encodeURIComponent(`To-Go Bag (${variant}${subVariant ? ', '+subVariant : ''}, ${color}) förbeställning`);
-    const callback = encodeURIComponent(window.location.href);
-    const swishApp = `swish://paymentrequest?token=1&callbackurl=${callback}&payee=${SWISH_NUMBER}&amount=${total}&message=${message}`;
-    const swishWeb = `https://swish.nu/?number=${SWISH_NUMBER}&amount=${total}&text=${message}`;
+    // attempt to open Swish app (mobile) and set manual fallback link
+    tryOpenSwish(total, variant, subVariant, color);
 
-    // Try to open app
-    if(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){
-      // On mobile try to change location — many browsers will open app.
-      window.location.href = swishApp;
-      // Fallback: if app doesn't open, open web fallback after short timeout
-      const t0 = Date.now();
-      setTimeout(()=>{
-        if(Date.now() - t0 < 3000){
-          // still here -> open web fallback
-          window.open(swishWeb, '_blank');
-        }
-      }, 1200);
-    } else {
-      alert("Swish kan endast öppnas automatiskt på mobil. Öppna sidan på mobilen för att betala.");
-    }
-
-    // reset cart
+    // reset cart & UI
     cart = { quantity:0, variant:null, subVariant:null, color:null };
     document.getElementById('cartCount').textContent = 0;
     btn.disabled = false; btn.textContent = "💸 Betala & Förbeställ";
   }, (err)=>{
     console.error(err);
-    alert("Ett fel uppstod vid skickande. Försök igen.");
+    alert("Ett fel uppstod vid skickande av beställning. Försök igen.");
     btn.disabled = false; btn.textContent = "💸 Betala & Förbeställ";
   });
 }
 
-/* Utilities */
+/* Try to open Swish; provide fallback web link and manual button */
+function tryOpenSwish(amount, variant, subVariant, color){
+  const message = encodeURIComponent(`To-Go Bag (${variant}${subVariant ? ', '+subVariant : ''}, ${color}) förbeställning`);
+  const callback = encodeURIComponent(window.location.href);
+  const swishApp = `swish://paymentrequest?token=1&callbackurl=${callback}&payee=${SWISH_NUMBER}&amount=${amount}&message=${message}`;
+  const swishWeb = `https://swish.nu/?number=${SWISH_NUMBER}&amount=${amount}&text=${message}`;
+
+  // save fallback url for manual open button
+  window._lastSwishUrl = swishWeb;
+
+  // If on mobile, try to open app
+  if(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){
+    // try to open using location change
+    const now = Date.now();
+    window.location.href = swishApp;
+
+    // If app doesn't open within timeout, open web fallback in new tab (short delay)
+    setTimeout(()=> {
+      if(Date.now() - now < 3000){
+        // still here -> open web fallback in new tab so user can continue
+        window.open(swishWeb,'_blank');
+      }
+    }, 1200);
+  } else {
+    // desktop users: show manual swish button (in checkout modal and enable manual button)
+    const manual = document.getElementById('manualSwishBtn');
+    if(manual) manual.style.display = 'inline-block';
+    alert("Swish kan bara öppnas automatiskt på mobil. Öppna sidan på mobilen för att betala eller använd länken som öppnas i ny flik.");
+    // open fallback web page in new tab
+    window.open(swishWeb,'_blank');
+  }
+}
+
+/* utilities */
 function escapeHtml(unsafe){
   if(!unsafe) return '';
-  return String(unsafe).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+  return String(unsafe)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#039;');
 }
 </script>
 </body>
