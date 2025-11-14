@@ -5,13 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>To-Go Bag UF</title>
 <style>
-  :root{
-    --navy:#001f3f;
-    --white:#ffffff;
-    --muted:#6b879a;
-    --accent:#00b22d;
-    --radius:12px;
-  }
+  :root{--navy:#001f3f;--white:#fff;--muted:#6b879a;--accent:#00b22d;--radius:12px}
   *{box-sizing:border-box}
   body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;color:var(--navy);background:var(--white);-webkit-font-smoothing:antialiased}
   header{background:var(--navy);color:var(--white);padding:20px 14px;text-align:center}
@@ -38,7 +32,6 @@
   footer{background:var(--navy);color:var(--white);padding:12px;text-align:center;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
   footer img.logo-small{height:36px}
   #cartIcon{position:fixed;right:14px;bottom:14px;background:var(--navy);color:white;padding:10px 12px;border-radius:999px;z-index:1500;cursor:pointer;box-shadow:0 8px 26px rgba(0,0,0,0.18)}
-  /* modals */
   .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;z-index:1600;opacity:0;pointer-events:none;transition:opacity .22s}
   .modal-backdrop.open{opacity:1;pointer-events:auto}
   .modal{width:100%;max-width:520px;max-height:88vh;overflow-y:auto;background:#fff;border-radius:var(--radius);padding:18px;box-shadow:0 18px 48px rgba(0,0,0,0.2);transform:translateY(-18px);transition:transform .22s;position:relative}
@@ -52,7 +45,7 @@
   .logo-in-confirm{height:80px;display:block;margin:8px auto}
   .qty-input{width:70px;padding:6px;border-radius:6px;border:1px solid #d9e9fb}
   .remove-btn{background:transparent;border:0;color:#c0392b;cursor:pointer}
-  .qr-img{display:block;margin:12px auto;max-width:260px;width:100%}
+  .qr-img{display:block;margin:12px auto;max-width:260px;width:100%;cursor:pointer;border-radius:8px}
   @media (max-width:900px){.product-card{grid-template-columns:1fr}.prod-visual{order:-1}.modal{max-width:95%;padding:14px;max-height:85vh}}
 </style>
 </head>
@@ -60,7 +53,6 @@
 
 <header>
   <div class="header-top">
-    <!-- Se till att 'logo.png' finns i samma mapp som den här filen -->
     <img src="logo.png" alt="To-Go Bag logga" class="logo" />
   </div>
   <h1>To-Go Bag UF</h1>
@@ -119,7 +111,6 @@
             </div>
 
             <div style="margin-top:14px;display:flex;gap:12px;align-items:center">
-              <!-- Pris tas bort från knappen enligt önskemål -->
               <button id="orderBtn" class="btn btn-primary">Lägg i varukorg</button>
               <div class="muted">Pris: <strong>85 kr</strong></div>
             </div>
@@ -213,9 +204,8 @@
       <button type="button" class="pay-btn" id="submitOrderBtn" onclick="submitOrder()">Skicka beställning & visa betalning</button>
 
       <div id="qrArea" style="margin-top:12px; text-align:center; display:none;">
-        <p class="small" style="margin-bottom:8px">Skanna QR-koden med din kamera eller Swish-app för att betala.</p>
-        <!-- Visa den uppladdade bilden - se till att swish-QR-small.png finns i samma mapp -->
-        <img id="swishQrImg" class="qr-img" src="swish-QR-small.png" alt="Swish QR-kod - To-Go Bag UF">
+        <p class="small" style="margin-bottom:8px">Skanna QR-koden med din kamera eller Swish-app för att betala eller tryck på bilden för att öppna Swish direkt.</p>
+        <img id="swishQrImg" class="qr-img" src="swish-QR-small.png" alt="Swish QR-kod - To-Go Bag UF" />
         <div style="margin-top:8px">
           <button id="manualSwishBtn" style="padding:8px 12px;border-radius:8px;border:1px solid #d6e9f7;background:#f8fbff;color:var(--navy);cursor:pointer">Öppna Swish manuellt</button>
         </div>
@@ -233,15 +223,14 @@
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script>
 /* ---------- KONFIG ---------- */
-emailjs.init("ZUlGUNzP7Tqxg-LkD"); // din public key
+emailjs.init("ZUlGUNzP7Tqxg-LkD"); // public key
 const EMAIL_SERVICE = "service_obk5jf2";
 const EMAIL_TEMPLATE = "template_kj9rgm7";
-const SWISH_NUMBER = "0764134947"; // används internt i QR, visas ej i UI
+const SWISH_NUMBER = "0764134947"; // används internt i länken men visas ej i UI
 const COMPANY_NAME = "To-Go Bag UF";
 const PRICE = 85;
 
 /* ---------- APP STATE ---------- */
-/* cartItems = array of {id, variant, subVariant, color, qty} */
 let cartItems = [];
 
 /* ---------- INIT ---------- */
@@ -250,22 +239,23 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('variantSelect').addEventListener('change', updateSubVariantVisibility);
   updateSubVariantVisibility();
 
-  // modal close buttons + backdrop close
   document.getElementById('closeCartBtn').addEventListener('click', closeCart);
   document.getElementById('closeCheckoutBtn').addEventListener('click', closeCheckout);
   document.getElementById('cartModalBackdrop').addEventListener('click', (e)=>{ if(e.target === document.getElementById('cartModalBackdrop')) closeCart(); });
   document.getElementById('checkoutModalBackdrop').addEventListener('click', (e)=>{ if(e.target === document.getElementById('checkoutModalBackdrop')) closeCheckout(); });
 
-  document.getElementById('manualSwishBtn').addEventListener('click', function(){
-    // öppna fallback webbsida i ny flik (swish.nu)
-    if(window._lastSwishUrl) window.open(window._lastSwishUrl, '_blank');
-  });
+  document.getElementById('manualSwishBtn').addEventListener('click', function(){ if(window._lastSwishUrl) window.open(window._lastSwishUrl, '_blank'); });
 
-  // add-to-cart
   document.getElementById('orderBtn').addEventListener('click', addCurrentToCart);
-
-  // cart icon click
   document.getElementById('cartIcon').addEventListener('click', openCart);
+
+  // make QR clickable
+  document.getElementById('swishQrImg').addEventListener('click', function(){
+    if(window._lastSwishUrl) {
+      // on mobile, open swish link; on desktop open swish web fallback
+      window.open(window._lastSwishUrl, '_blank');
+    }
+  });
 });
 
 /* ---------- SECTIONS ---------- */
@@ -287,18 +277,13 @@ function addCurrentToCart(){
   const subVariant = (variant === 'Binda/Tampong') ? document.getElementById('subVariantSelect').value : '';
   const color = document.getElementById('colorSelect').value;
 
-  // If exact same variant+sub+color exists, increment qty
   const existing = cartItems.find(i => i.variant===variant && i.subVariant===subVariant && i.color===color);
   if(existing){
     existing.qty += 1;
   } else {
-    cartItems.push({
-      id: Date.now() + Math.random().toString(36).slice(2,6),
-      variant, subVariant, color, qty: 1
-    });
+    cartItems.push({ id: Date.now()+Math.random().toString(36).slice(2,6), variant, subVariant, color, qty:1 });
   }
   updateCartUI();
-  // DO NOT open cart automatically
 }
 
 function updateCartUI(){
@@ -328,25 +313,20 @@ function updateCartUI(){
   });
   area.innerHTML = html;
 
-  // attach listeners
   cartItems.forEach(item=>{
     const el = document.getElementById('qty_' + item.id);
     if(el){
       el.addEventListener('input', (e)=>{
-        let v = parseInt(e.target.value);
-        if(isNaN(v) || v < 1) v = 1;
-        item.qty = v;
-        updateCartUI();
+        let v = parseInt(e.target.value); if(isNaN(v) || v < 1) v = 1;
+        item.qty = v; updateCartUI();
       });
     }
   });
 
-  // remove buttons
   area.querySelectorAll('.remove-btn').forEach(btn=>{
-    btn.addEventListener('click', (e)=>{
+    btn.addEventListener('click', ()=>{
       const idx = parseInt(btn.getAttribute('data-index'));
-      cartItems.splice(idx,1);
-      updateCartUI();
+      cartItems.splice(idx,1); updateCartUI();
     });
   });
 
@@ -362,9 +342,7 @@ function closeCart(){ document.getElementById('cartModalBackdrop').classList.rem
 /* ---------- CHECKOUT ---------- */
 function openCheckout(){
   if(!cartItems.length){ alert("Din varukorg är tom."); return; }
-  // populate checkout summary
-  const listEl = document.getElementById('checkoutItemsList');
-  listEl.innerHTML = '';
+  const listEl = document.getElementById('checkoutItemsList'); listEl.innerHTML = '';
   cartItems.forEach(it=>{
     const sub = it.subVariant ? ` (${it.subVariant})` : '';
     const row = `${it.qty} x ${it.variant}${sub} — ${it.color} ( ${it.qty * PRICE} kr )`;
@@ -375,7 +353,7 @@ function openCheckout(){
 }
 function closeCheckout(){ document.getElementById('checkoutModalBackdrop').classList.remove('open'); }
 
-/* ---------- SUBMIT ORDER (EmailJS + show QR) ---------- */
+/* ---------- SUBMIT ORDER (EmailJS + Swish link + QR visible) ---------- */
 function submitOrder(){
   const name = document.getElementById('name').value.trim();
   const email = document.getElementById('email').value.trim();
@@ -394,29 +372,21 @@ function submitOrder(){
     return;
   }
 
-  // build items summary string for email and swish message
   const itemsSummary = cartItems.map(i=>{
     const sub = i.subVariant ? ` (${i.subVariant})` : '';
     return `${i.qty}× ${i.variant}${sub} — ${i.color}`;
   }).join('; ');
   const total = cartItems.reduce((s,i)=>s + i.qty*PRICE, 0);
 
-  // EmailJS params (include logo_url)
   const logo_url = `${window.location.origin}/logo.png`;
-  const params = {
-    name, email, phone, address, postal, city, shipping,
-    items: itemsSummary,
-    total,
-    logo_url,
-    company: COMPANY_NAME
-  };
+  const params = { name, email, phone, address, postal, city, shipping, items: itemsSummary, total, logo_url, company: COMPANY_NAME };
 
-  // disable button to avoid duplicates
   const btn = document.getElementById('submitOrderBtn');
   btn.disabled = true; btn.textContent = "Skickar...";
 
+  // send email with order (to your EmailJS template)
   emailjs.send(EMAIL_SERVICE, EMAIL_TEMPLATE, params).then(()=>{
-    // On success: show confirmation + QR area
+    // show confirmation and make QR visible
     const modal = document.querySelector('#checkoutModalBackdrop .modal');
     modal.innerHTML = `
       <span class="closeX" onclick="closeCheckout()">&times;</span>
@@ -430,7 +400,7 @@ function submitOrder(){
         <p><strong>Frakt:</strong> ${escapeHtml(shipping)}</p>
         <p><strong>Produkter:</strong> ${escapeHtml(itemsSummary)}</p>
         <p><strong>Total:</strong> ${total} kr</p>
-        <p style="margin-top:12px">Skanna QR-koden nedan med Swish för att betala. Ditt nummer visas inte i text — endast företagsnamnet <strong>${COMPANY_NAME}</strong> i Swish-appen (QR innehåller nödvändig betalinfo).</p>
+        <p style="margin-top:12px">Skanna QR-koden nedan med Swish för att betala, eller tryck på bilden för att öppna Swish direkt med korrekt belopp. Ditt nummer visas inte i text — endast företagsnamnet <strong>${COMPANY_NAME}</strong> i Swish.</p>
         <div id="qrContainer" style="margin-top:12px;text-align:center"></div>
         <div style="margin-top:12px">
           <button id="manualSwishLink" style="background:#0b6bff;color:#fff;padding:10px 14px;border-radius:8px;border:0;cursor:pointer">Öppna Swish manuellt</button>
@@ -438,35 +408,58 @@ function submitOrder(){
       </div>
     `;
 
-    // Prepare fallback URL (swish.nu) so manual link works; save globally
-    // (we also keep using the uploaded QR-image so customers can scan)
-    const message = `${COMPANY_NAME}: ${itemsSummary} — Totalt ${total}kr`;
-    const swishWeb = `https://swish.nu/?number=${SWISH_NUMBER}&amount=${total}&text=${encodeURIComponent(message)}`;
-    window._lastSwishUrl = swishWeb;
+    // prepare links
+    // build swish:// link with amount fixed so user cannot change it
+    // note: amount must be integer (sek)
+    const message = `Beställning%20To-Go%20Bag%20UF`;
+    const swishAppLink = `swish://payment?version=1&payee=${encodeURIComponent(SWISH_NUMBER)}&amount=${total}&message=${message}`;
+    const swishWebFallback = `https://swish.nu/?number=${encodeURIComponent(SWISH_NUMBER)}&amount=${total}&text=${message}`;
 
-    // Insert the uploaded QR image (swish-QR-small.png). Make sure file exists in repo.
+    window._lastSwishUrl = swishAppLink;
+
+    // insert QR image (uploaded) and make it clickable to open swishAppLink/swishWebFallback
     const qrContainer = document.getElementById('qrContainer');
     if(qrContainer){
       const img = document.createElement('img');
       img.src = 'swish-QR-small.png';
       img.alt = 'Swish QR';
       img.className = 'qr-img';
+      img.style.cursor = 'pointer';
+      img.addEventListener('click', ()=> {
+        // Try opening app; if not opened, open fallback web URL
+        tryOpenLink(swishAppLink, swishWebFallback);
+      });
       qrContainer.appendChild(img);
     }
 
-    // Hook manual button
+    // manual button opens fallback (or app if device handles swish://)
     const manualBtn = document.getElementById('manualSwishLink');
-    if(manualBtn) manualBtn.addEventListener('click', ()=> window.open(window._lastSwishUrl, '_blank'));
+    if(manualBtn) manualBtn.addEventListener('click', ()=> tryOpenLink(swishAppLink, swishWebFallback));
 
     // reset cart and UI
-    cartItems = [];
-    updateCartUI();
+    cartItems = []; updateCartUI();
     btn.disabled = false; btn.textContent = "Skicka beställning & visa betalning";
   }, (err)=>{
     console.error(err);
     alert("Ett fel uppstod när vi försökte skicka beställningen. Försök igen.");
     btn.disabled = false; btn.textContent = "Skicka beställning & visa betalning";
   });
+}
+
+/* helper: try open swish app link, fallback to web */
+function tryOpenLink(appLink, webLink){
+  // on mobile attempt to open the app link; otherwise open web link
+  if(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){
+    const now = Date.now();
+    window.location.href = appLink;
+    setTimeout(()=> {
+      if(Date.now() - now < 3000){
+        window.open(webLink, '_blank');
+      }
+    }, 1200);
+  } else {
+    window.open(webLink, '_blank');
+  }
 }
 
 /* ---------- UTIL ---------- */
