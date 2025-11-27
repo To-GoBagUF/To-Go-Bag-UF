@@ -47,124 +47,67 @@
 </style>
 </head>
 <body>
-
 <header>
-  <div class="header-top">
-    <img src="logo.png" alt="To-Go Bag logga" class="logo" />
-  </div>
-  <h1>To-Go Bag UF</h1>
-  <p>För alla små kriser i livet – vi packade väskan åt dig 😉</p>
-  <div class="header-note">Klicka på <strong>Produkt</strong> här ovan för att se och beställa.</div>
-  <div class="header-buttons">
-    <button class="btn btn-primary" onclick="showSection('product')">Produkt</button>
-    <button class="btn btn-secondary" onclick="showSection('contact')">Kontakt</button>
-  </div>
+  <!-- header content här -->
 </header>
-
-<div class="preorder">Just nu: Förbeställning — Endast Swish</div>
-
 <main>
-  <section id="home">
-    <div class="section-inner">
-      <h2>Välkommen</h2>
-      <p class="lead">To-Go Bag — en smart nödväska för vardagens små kriser. Klicka på Produkt för att beställa.</p>
-    </div>
-  </section>
-
-  <section id="product">
-    <div class="section-inner">
-      <h2>The To-Go Bag</h2>
-      <p class="lead">En liten väska med handsprit, plåster, hårsnoddar, binda/tampong, müslibar, tuggummi och våtservetter.</p>
-      <p class="small" style="font-weight:700;margin-bottom:8px">Endast Swish</p>
-      <div class="product-card">
-        <div>
-          <p style="font-weight:800;margin:0 0 8px">The To-Go Bag</p>
-          <p class="muted">Perfekt för skolan, festen eller när du är på språng.</p>
-          <div style="margin-top:12px">
-            <label for="variantSelect">Variant</label>
-            <select id="variantSelect">
-              <option value="Binda/Tampong">Binda/Tampong</option>
-              <option value="Herr">Herr</option>
-            </select>
-            <div id="subVariantWrap" style="margin-top:10px">
-              <label for="subVariantSelect">Välj</label>
-              <select id="subVariantSelect">
-                <option value="Binda">Binda</option>
-                <option value="Tampong">Tampong</option>
-              </select>
-            </div>
-            <div style="margin-top:10px">
-              <label for="colorSelect">Färg</label>
-              <select id="colorSelect">
-                <option value="Blå">Blå</option>
-                <option value="Rosa">Rosa</option>
-                <option value="Svart">Svart</option>
-                <option value="Vit">Vit</option>
-              </select>
-            </div>
-            <div style="margin-top:14px;display:flex;gap:12px;align-items:center">
-              <button id="orderBtn" class="btn btn-primary">Lägg i varukorg</button>
-              <div class="muted">Pris: <strong>85 kr</strong></div>
-            </div>
-            <div class="small" style="margin-top:8px">Variant & val inkluderas i orderbekräftelsen och i Swish-meddelandet.</div>
-          </div>
-        </div>
-        <div class="prod-visual">
-          <div style="height:200px;display:flex;align-items:center;justify-content:center;color:#234;font-weight:700">Produktbild</div>
-          <div style="margin-top:12px;font-weight:800;color:var(--navy)">85 kr</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="contact">
-    <div class="section-inner">
-      <h2>Kontakt</h2>
-      <p class="lead">Mejla oss på <a href="mailto:togobaguf@gmail.com">togobaguf@gmail.com</a></p>
-      <p class="small" style="margin-top:6px;font-weight:700">Endast Swish</p>
-    </div>
-  </section>
+  <!-- main content här -->
 </main>
-
-<!-- cart icon -->
 <div id="cartIcon" title="Varukorg">🛒 <span id="cartCount">0</span></div>
-
-<!-- CHECKOUT MODAL -->
-<div id="checkoutModalBackdrop" class="modal-backdrop" aria-hidden="true">
-  <div class="modal" role="dialog" aria-modal="true">
-    <span class="closeX" id="closeCheckoutBtn">&times;</span>
-    <img src="logo.png" class="logo-in-confirm" />
-    <form id="checkoutForm" onsubmit="return false;">
-      <label for="name">Namn</label>
-      <input id="name" type="text" required>
-      <label for="email">E-post</label>
-      <input id="email" type="email" required>
-      <label for="address">Adress</label>
-      <input id="address" type="text" required>
-      <label for="postal">Postnummer</label>
-      <input id="postal" type="text" required>
-      <label for="city">Stad</label>
-      <input id="city" type="text" required>
-      <button type="button" class="pay-btn" id="submitOrderBtn">Skicka beställning</button>
-    </form>
+<div id="cartModalBackdrop" class="modal-backdrop">
+  <div class="modal">
+    <span class="closeX" id="closeCartBtn">&times;</span>
+    <div id="cartItems"></div>
+    <div class="summary" id="cartSummary"></div>
+    <div style="display:flex;gap:10px;margin-top:14px">
+      <button class="btn btn-secondary" onclick="closeCart()" style="flex:1">Fortsätt handla</button>
+      <button class="btn btn-primary" onclick="openCheckout()" style="flex:1">Gå till förbeställning</button>
+    </div>
   </div>
 </div>
-
-<footer>
-  <img src="logo.png" alt="To-Go Bag logo" class="logo-small" />
-  <div>© 2025 To-Go Bag UF — Kontakt: <a style="color:#e6f2ff" href="mailto:togobaguf@gmail.com">togobaguf@gmail.com</a></div>
-</footer>
-
+<div id="checkoutModalBackdrop" class="modal-backdrop">
+  <div class="modal" role="dialog" aria-modal="true">
+    <span class="closeX" id="closeCheckoutBtn">&times;</span>
+    <div id="checkoutContent">
+      <!-- dynamiskt innehåll kommer här -->
+    </div>
+  </div>
+</div>
 <script>
 const PRICE=85;
 let cartItems=[];
-
-function showSection(id){document.querySelectorAll('main section').forEach(s=>s.style.display='none');document.getElementById(id).style.display='block';}
-function updateSubVariantVisibility(){const v=document.getElementById('variantSelect').value;document.getElementById('subVariantWrap').style.display=(v==='Binda/Tampong')?'block':'none';}
-document.addEventListener('DOMContentLoaded',()=>{showSection('home');updateSubVariantVisibility();document.getElementById('variantSelect').addEventListener('change',updateSubVariantVisibility);document.getElementById('orderBtn').addEventListener('click',()=>{const variant=document.getElementById('variantSelect').value;const subVariant=(variant==='Binda/Tampong')?document.getElementById('subVariantSelect').value:'';const color=document.getElementById('colorSelect').value;const existing=cartItems.find(i=>i.variant===variant&&i.subVariant===subVariant&&i.color===color);if(existing){existing.qty+=1}else{cartItems.push({id:Date.now()+Math.random().toString(36).slice(2,6),variant,subVariant,color,qty:1})}});document.getElementById('submitOrderBtn').addEventListener('click',submitOrder);});
-function submitOrder(){const total=cartItems.reduce((s,i)=>s+i.qty*PRICE,0);const swishLink=`swish://payment?version=1&payee=0764134947&amount=${total}&message=Beställning%20To-Go%20Bag%20UF`;const webFallback=`https://swish.nu/?number=0764134947&amount=${total}&text=Beställning%20To-Go%20Bag%20UF`;const modal=document.querySelector('#checkoutModalBackdrop .modal');modal.innerHTML=`<span class="closeX" onclick="closeCheckout()">&times;</span><img src="logo.png" class="logo-in-confirm" /><h3>Tack! Din beställning är mottagen</h3><p style="margin-top:10px;font-weight:600">Tryck på knappen nedan för att betala med Swish.</p><button class="pay-btn" onclick="tryOpenLink('${swishLink}','${webFallback}')"><img src="swish-logo.png" alt="Swish" /> Betala med Swish</button><p class="small" style="margin-top:10px">Belopp: ${total} kr</p>`;cartItems=[];}
-function tryOpenLink(app,web){if(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){const t=Date.now();window.location.href=app;setTimeout(()=>{if(Date.now()-t<1500)window.open(web);},900);}else window.open(web);}
+function updateCartUI(){/* uppdatera cart */}
+function openCart(){document.getElementById('cartModalBackdrop').classList.add('open');}
+function closeCart(){document.getElementById('cartModalBackdrop').classList.remove('open');}
+function openCheckout(){
+  if(!cartItems.length){alert('Din varukorg är tom');return;}
+  document.getElementById('checkoutModalBackdrop').classList.add('open');
+}
 function closeCheckout(){document.getElementById('checkoutModalBackdrop').classList.remove('open');}
+function tryOpenLink(app,web){
+  if(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){
+    const t=Date.now();window.location.href=app;
+    setTimeout(()=>{if(Date.now()-t<1500)window.open(web,'_blank');},900);
+  } else window.open(web,'_blank');
+}
+function submitOrder(){
+  const total = cartItems.reduce((s,i)=>s+i.qty*PRICE,0);
+  const swishLink = `swish://payment?version=1&payee=0764134947&amount=${total}&message=Beställning%20To-Go%20Bag%20UF`;
+  const webFallback = `https://swish.nu/?number=0764134947&amount=${total}&text=Beställning%20To-Go%20Bag%20UF`;
+  const content = document.getElementById('checkoutContent');
+  content.innerHTML = `
+    <img src="logo.png" class="logo-in-confirm" />
+    <h3>Tack! Din beställning är mottagen</h3>
+    <p style="margin-top:10px;font-weight:600">Tryck på knappen nedan för att betala med Swish.</p>
+    <button class="pay-btn" onclick="tryOpenLink('${swishLink}','${webFallback}')">
+      <img src="swish-logo.png" alt="Swish" /> Betala med Swish
+    </button>
+    <p class="small" style="margin-top:10px">Belopp: ${total} kr</p>
+  `;
+  cartItems=[];
+  updateCartUI();
+  document.getElementById('checkoutModalBackdrop').classList.add('open');
+}
 </script>
 </body>
 </html>
