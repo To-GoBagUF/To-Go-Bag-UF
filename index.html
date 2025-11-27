@@ -18,54 +18,93 @@
   .btn{padding:10px 16px;border-radius:10px;font-size:15px;border:0;cursor:pointer;transition:transform .14s,box-shadow .14s}
   .btn-primary{background:var(--white);color:var(--navy);font-weight:700;box-shadow:0 6px 18px rgba(0,0,0,0.12)}
   .btn-secondary{background:transparent;color:var(--white);border:2px solid rgba(255,255,255,0.12)}
-  .preorder{background:var(--navy);color:var(--white);text-align:center;padding:10px;font-weight:700}
   main{max-width:1100px;margin:20px auto;padding:0 16px}
-  section{display:none;padding:28px 0}
-  .section-inner{max-width:960px;margin:0 auto}
-  h2{margin:0 0 10px;font-size:22px}
-  p.lead{margin:0 0 12px;color:#073049}
-  .product-card{display:grid;grid-template-columns:1fr 320px;gap:18px;align-items:start}
-  .prod-visual{background:#f4f9ff;border-radius:12px;padding:14px;text-align:center}
-  label{display:block;margin:8px 0 6px;font-weight:700;color:#00314f}
-  select,input[type="text"],input[type="email"],input[type="number"]{width:100%;padding:10px;border-radius:8px;border:1px solid #cfe0ef;font-size:15px}
-  .muted{color:var(--muted);font-size:14px}
-  footer{background:var(--navy);color:var(--white);padding:12px;text-align:center;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
-  footer img.logo-small{height:36px}
-  #cartIcon{position:fixed;right:14px;bottom:14px;background:var(--navy);color:white;padding:10px 12px;border-radius:999px;z-index:1500;cursor:pointer;box-shadow:0 8px 26px rgba(0,0,0,0.18)}
-  .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;z-index:1600;opacity:0;pointer-events:none;transition:opacity .22s}
-  .modal-backdrop.open{opacity:1;pointer-events:auto}
-  .modal{width:100%;max-width:520px;max-height:88vh;overflow-y:auto;background:#fff;border-radius:var(--radius);padding:18px;box-shadow:0 18px 48px rgba(0,0,0,0.2);transform:translateY(-18px);transition:transform .22s;position:relative}
-  .modal-backdrop.open .modal{transform:translateY(0)}
-  .closeX{position:absolute;right:12px;top:10px;cursor:pointer;color:#666;font-size:18px}
-  .cart-item{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px;border-bottom:1px solid #eef6ff;padding-bottom:10px}
-  .summary{background:#f7fbff;padding:12px;border-radius:10px;margin-top:12px}
+  footer{background:var(--navy);color:var(--white);padding:12px;text-align:center}
   .pay-btn{background:var(--accent);color:white;font-weight:700;width:100%;padding:12px;border:0;border-radius:10px;font-size:16px;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px}
   .pay-btn img{height:26px}
-  .pay-btn:active{transform:scale(.99)}
-  .small{font-size:13px;color:#5b6f80}
-  @media (max-width:900px){.product-card{grid-template-columns:1fr}.prod-visual{order:-1}.modal{max-width:95%;padding:14px;max-height:85vh}}
 </style>
 </head>
 <body>
-<!-- CODE TRUNCATED FOR BREVITY, SAME UNTIL CHECKOUT MODAL -->
-<!-- REPLACED PAYMENT AREA WITH SWISH BUTTON ONLY -->
-<!-- NEW SWISH BUTTON IMPLEMENTATION -->
+<header>
+  <div class="header-top">
+    <img src="logo.png" class="logo" />
+    <h1>To-Go Bag UF</h1>
+  </div>
+  <p class="header-note">Miljövänliga påsar — För en bättre framtid</p>
+</header>
+
+<main>
+  <h2>Beställning</h2>
+  <p>Fyll i dina uppgifter och slutför beställningen med Swish.</p>
+
+  <label>Antal:</label>
+  <input id="amount" type="number" value="1" min="1" />
+
+  <label>Namn:</label>
+  <input id="name" type="text" />
+
+  <label>Email:</label>
+  <input id="email" type="email" />
+
+  <button onclick="submitOrder()" class="btn btn-primary" style="margin-top:10px">Gå till betalning</button>
+</main>
+
+<!-- CHECKOUT MODAL -->
+<div id="checkoutModalBackdrop" class="modal-backdrop">
+  <div class="modal"></div>
+</div>
+
+<footer>
+  <p>To-Go Bag UF • 2024</p>
+</footer>
+
 <script>
-function submitOrder(){ /* ... existing validation ... */ const total = cartItems.reduce((s,i)=>s+i.qty*PRICE,0);
- const swishLink = `swish://payment?version=1&payee=0764134947&amount=${total}&message=Beställning%20To-Go%20Bag%20UF`;
- const webFallback = `https://swish.nu/?number=0764134947&amount=${total}&text=Beställning%20To-Go%20Bag%20UF`;
- const modal = document.querySelector('#checkoutModalBackdrop .modal');
- modal.innerHTML = `
-   <span class="closeX" onclick="closeCheckout()">&times;</span>
-   <img src="logo.png" class="logo-in-confirm" />
-   <h3>Tack! Din beställning är mottagen</h3>
-   <p style="margin-top:10px;font-weight:600">Tryck på knappen nedan för att betala med Swish.</p>
-   <button class="pay-btn" onclick="tryOpenLink('${swishLink}','${webFallback}')">
+function submitOrder(){
+  const amount = parseInt(document.getElementById('amount').value);
+  if(!amount || amount < 1) return alert("Ange antal.");
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  if(!name || !email) return alert("Fyll i alla fält.");
+
+  const PRICE = 20;
+  const total = amount * PRICE;
+
+  const swishLink = `swish://payment?version=1&payee=0764134947&amount=${total}&message=Beställning%20To-Go%20Bag%20UF`;
+  const webFallback = `https://swish.nu/?number=0764134947&amount=${total}&text=Beställning%20To-Go%20Bag%20UF`;
+
+  const modal = document.querySelector('#checkoutModalBackdrop .modal');
+
+  modal.innerHTML = `
+    <span class="closeX" onclick="closeCheckout()" style="position:absolute;right:12px;top:10px;cursor:pointer;font-size:22px">&times;</span>
+    <h3>Tack! Din beställning är mottagen</h3>
+    <p style="margin-top:10px;font-weight:600">Tryck på knappen nedan för att betala med Swish.</p>
+
+    <button class="pay-btn" onclick="tryOpenLink('${swishLink}','${webFallback}')">
       <img src="swish-logo.png" alt="Swish" /> Betala med Swish
-   </button>
-   <p class="small" style="margin-top:10px">Belopp: ${total} kr</p>`;
- cartItems=[]; updateCartUI(); }
-function tryOpenLink(app,web){ if(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){ const t=Date.now();window.location.href=app;setTimeout(()=>{ if(Date.now()-t<1500) window.open(web);},900);} else window.open(web); }
+    </button>
+
+    <p style="font-size:13px;margin-top:10px;color:#5b6f80">Belopp: ${total} kr</p>
+  `;
+
+  document.getElementById('checkoutModalBackdrop').classList.add('open');
+}
+
+function closeCheckout(){
+  document.getElementById('checkoutModalBackdrop').classList.remove('open');
+}
+
+function tryOpenLink(app, web){
+  if(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){
+    const t = Date.now();
+    window.location.href = app;
+    setTimeout(()=>{
+      if(Date.now() - t < 1500) window.open(web);
+    }, 900);
+  } else {
+    window.open(web);
+  }
+}
 </script>
+
 </body>
 </html>
